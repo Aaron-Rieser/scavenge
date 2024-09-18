@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>scavenge.toronto</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <style>
+        body {
+            font-family: Consolas, sans-serif;
+            background-color: black;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: rgb(49, 40, 90);
+            padding: 10px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo {
+            height: 60px;
+            width: auto;
+            cursor: pointer;
+        }
+
+        .title {
+            font-size: 24px;
+            margin-right: 10px;
+            flex-grow: 1;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+        }
+
+        .title:hover {
+            text-decoration: underline;
+        }
+
+        @media (min-width: 769px) {
+            .logo {
+                height: 62px;
+                margin-left: 15px;
+            }
+        }
+        button {
+            font-family: Consolas, sans-serif;
+            margin: 50px 0;
+            padding: 10px 20px;
+            font-size: 20px;
+        }
+        .image-container {
+            position: relative;
+            width: 100%;
+            max-width: 1920px;
+            margin: 20px auto;
+            background-color: black;
+        }
+
+        .trending-title {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgb(49, 40, 90);
+            color: white;
+            padding: 10px 20px;
+            font-size: 20px;
+            text-align: center;
+            width: 200px;
+            z-index: 1;
+        }
+
+        .trending-posts {
+            position: absolute;
+            top: 105px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 300px;
+            z-index: 1;
+        }
+
+        .trending-post {
+            background-color: rgba(255, 255, 255, 0.8);
+            color: black;
+            margin-bottom: 10px;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .trending-post-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .trending-post-flag {
+            color: grey;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .trending-post-content {
+            font-size: 12px;
+        }
+
+        .image-container {
+            position: relative;
+            width: 100%;
+            max-width: 1920px;
+            margin: 20px auto;
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        td {
+            padding-bottom: 20px;
+            padding-top: 20px
+            border-bottom; 1px solid #444;
+        }
+        .post-headline {
+        font-weight: bold;
+        font-size: 18px;
+        margin-right: 5px;
+        text-decoration: underline;
+        }
+        .post-tag {
+            display: inline;
+            background-color: grey;
+            color: white;
+            padding: 3px 6px;
+            font-size: 12px;
+            margin-left: 5px;
+            border-radius: 3px;
+        }
+        .profile-name {
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .post-container {
+            display: flex;
+            flex-direction: column;
+        }
+        .post-content-wrapper {
+            margin-top: 5px; /* Reduced space between content and reply button */
+            margin-bottom: 5px; /* Reduced space between content and reply button */
+        }
+        .reply-btn-wrapper {
+            margin-top: 10; /* Removed space between content and reply button */
+        }
+        .reply-btn {
+            font-weight: bold;
+            background-color: rgb(49, 40, 90);
+            color: white;
+            font-size: 15px;
+            padding: 5px 10px;
+            margin-top: 10px;
+            display: inline-block;
+        }
+        .reply-btn:hover {
+        background-color: #a54a4a; /* Light blue highlight */
+        }
+
+        .reply-box {
+        display: none;
+        width: 100%;
+        margin-top: -20px;
+        position: relative;
+        padding-bottom: 40px; /* Add space for the button */
+        }
+
+        .reply-textarea {
+            width: 100%;
+            height: 4em;
+            resize: vertical;
+            margin-bottom: 10px;
+        }
+
+        .post-btn {
+            font-weight: bold;
+            background-color: #a54a4a;
+            color: white;
+            font-size: 15px;
+            padding: 5px 10px;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+        }
+
+        .post-btn:hover {
+            background-color: black;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+        }
+        .groovy-btn {
+            cursor: pointer;
+            margin-left: 10px;
+            display: inline-block; /* Change to inline-block */
+        }
+        .groovy-btn:hover::after {
+            content: "This post is groovy";
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        .groovy-count {
+            font-size: 12px;
+            margin-left: 3px;
+        }
+        .toronto-image {
+            width: 100%;
+            height: auto;
+            max-width: 1920px;
+            margin: 20px auto;
+            display: block;
+        }
+        @media (max-width: 768px) {
+            .toronto-image {
+                width: 100%;
+                height: 100vh;
+                object-fit: cover;
+                object-position: center;
+            }
+            .post-container {
+                flex-direction: column;
+            }
+            .post-content-wrapper {
+                order: 1;
+            }
+            .reply-btn-wrapper {
+                order: 2;
+                text-align: left;
+                margin-top: 0; /* Removed space between content and reply button */
+            }
+        }
+
+        .neighborhood-links {
+            text-align: center;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        .neighborhood-link {
+            font-family: Consolas, sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            padding: 2px 4px;
+            color: white;
+        }
+
+        .neighborhood-link:nth-child(4n+1) { background-color: #4a6fa5; }
+        .neighborhood-link:nth-child(4n+2) { background-color: #45a049; }
+        .neighborhood-link:nth-child(4n+3) { background-color: #a54a4a; }
+        .neighborhood-link:nth-child(4n) { background-color: #a59d4a; }
+        
+        .change-neighborhood-btn {
+            font-family: Consolas, sans-serif;
+            margin: 20px 0;
+            padding: 10px 20px;
+            font-size: 20px;
+            background-color: #a54a4a;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .selected-neighborhood {
+            text-decoration: underline;
+        }
+        .neighborhood-button:nth-child(4n+1) { background-color: #4a6fa5; }
+        .neighborhood-button:nth-child(4n+2) { background-color: #45a049; }
+        .neighborhood-button:nth-child(4n+3) { background-color: #a54a4a; }
+        .neighborhood-button:nth-child(4n) { background-color: #a59d4a; }
+
+        #mapPopup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        
+        #mapContainer {
+            width: 600px;
+            height: 400px;
+        }
+        
+        #confirmationPopup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1001;
+            width: 250px;
+        }
+
+        #confirmButton {
+            background-color: #000000;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            width: 100%;
+            font-size: 16px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        #confirmButton .close-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
+            background-color: #333;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        #confirmButton .close-btn:hover {
+            background-color: #555;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 0%;
+            right: 0px;
+            cursor: pointer;
+            font-size: 18px;
+            color: white;
+            background-color: rgb(49, 40, 90);
+            width: 20px;
+            height: 20px;
+            border-radius: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .close-btn:hover {
+            background-color: #333;
+        }
+
+                .reply {
+            margin-left: 20px;
+            border-left: 1px solid #444;
+            padding-left: 10px;
+            margin-top: 5px;
+        }
+
+        .reply-user {
+            text-decoration: underline;
+            font-weight: bold;
+        }
+
+        .reply-content {
+            font-size: 10px;
+        }
+
+        .reply-textarea {
+            width: 100%;
+            height: 4em;
+            resize: vertical;
+            margin-bottom: 10px;
+            max-length: 500;
+        }
+</style>
+        
+    </style>
+</head>
+<body>
+    <header>
+        <img src="scavenge_logo_2.png" alt="Logo" class="logo" onclick="goToHomepage()">
+        <h1 class="title" onclick="goToHomepage()">scavenge.toronto</h1>
+        <div style="width: 62px;"></div>
+    </header>
+    
+    <div id="locationButton" style="text-align: center;">
+        <button onclick="getLocation()">Find posts near me</button>
+    </div>
+    <div id="neighborhoodLinks" class="neighborhood-links">
+        <a class="neighborhood-link" onclick="selectNeighborhood('The Annex')">The Annex</a>, 
+        <a class="neighborhood-link" onclick="selectNeighborhood('Downtown')">Downtown</a>, 
+        <a class="neighborhood-link" onclick="selectNeighborhood('Liberty Village')">Liberty Village</a>, 
+        <a class="neighborhood-link" onclick="selectNeighborhood('Cabbagetown')">Cabbagetown</a>, 
+        <a class="neighborhood-link" onclick="selectNeighborhood('Leslieville')">Leslieville</a>, 
+        <a class="neighborhood-link" onclick="selectNeighborhood('North York')">North York</a>, 
+        <a class="neighborhood-link" onclick="selectNeighborhood('The Junction')">The Junction</a>, 
+        <a class="neighborhood-link" onclick="selectNeighborhood('High Park')">High Park</a>, 
+        <a class="neighborhood-link" onclick="selectNeighborhood('West End')">West End</a>, 
+        <a class="neighborhood-link" onclick="selectNeighborhood('The Village')">The Village</a>, 
+        <a class="neighborhood-link" onclick="selectNeighborhood('Etobicoke')">Etobicoke</a>, 
+        <a class="neighborhood-link" onclick="selectNeighborhood('Birchcliffe')">Birchcliffe</a>, 
+        <a class="neighborhood-link" onclick="selectNeighborhood('Scarborough')">Scarborough</a>, 
+        <a class="neighborhood-link" onclick="selectNeighborhood('Mt. Pleasant')">Mt. Pleasant</a>, 
+        <a class="neighborhood-link" onclick="selectNeighborhood('Don Mills')">Don Mills</a>
+    </div>
+    <div class="image-container" id="trendingContainer">
+        <div class="trending-title">Trending posts</div>
+        <div class="trending-posts">
+            <div class="trending-post">
+                <div class="trending-post-title">Here's how we met lorem ipsum</div>
+                <div class="trending-post-flag">Missed connection</div>
+                <div class="trending-post-content">You'll never guess who I saw coming out of the Tiki Bar lorem ipsum lorem ipsum lorem</div>
+            </div>
+            <div class="trending-post">
+                <div class="trending-post-title">Here's how we met lorem ipsum</div>
+                <div class="trending-post-flag">Blind item</div>
+                <div class="trending-post-content">You'll never guess who I saw coming out of the Tiki Bar lorem ipsum lorem ipsum lorem</div>
+            </div>
+            <div class="trending-post">
+                <div class="trending-post-title">Here's how we met lorem ipsum</div>
+                <div class="trending-post-flag">For sale</div>
+                <div class="trending-post-content">You'll never guess who I saw coming out of the Tiki Bar lorem ipsum lorem ipsum lorem</div>
+            </div>
+            <div class="trending-post">
+                <div class="trending-post-title">Here's how we met lorem ipsum</div>
+                <div class="trending-post-flag">Thoughts</div>
+                <div class="trending-post-content">You'll never guess who I saw coming out of the Tiki Bar lorem ipsum lorem ipsum lorem</div>
+            </div>
+        </div>
+    </div>
+    <p id="location" style="text-align: center;"></p>
+    <div id="changeNeighborhoodButton" style="text-align: center; display: none;">
+        <button class="change-neighborhood-btn" onclick="changeNeighborhood()">Change neighbourhood</button>
+    </div>
+    
+    <table id="posts" style="display: none;">
+        <!-- Table content will be dynamically populated -->
+    </table>
+    
+    <div id="loadMoreButton" style="text-align: center; display: none;">
+        <button onclick="loadMorePosts()">Show more posts</button>
+    </div>
+    
+    <img src="toronto_image.jpg" alt="Toronto" class="toronto-image" id="torontoImage">
+    
+    <footer>🍁made in canada🍁</footer>
+
+    <div id="mapPopup">
+        <div class="close-btn" onclick="closeMapPopup()">×</div>
+        <div id="mapContainer"></div>
+    </div>
+
+    <div id="confirmationPopup">
+        <button id="confirmButton" onclick="confirmAreaSelection()">
+            Explore <span id="areaName"></span>
+            <span class="close-btn" onclick="closeConfirmationPopup(event)">×</span>
+        </button>
+    </div>
+
+    <script> 
+        let postCount = 0;
+        let selectedNeighborhood = '';
+    
+        let map;
+        let geojsonLayer;
+        
+    function getLocation(neighborhood) {
+        // Show the map popup
+        document.getElementById('mapPopup').style.display = 'block';
+        
+        // Initialize the map
+        if (!map) {
+            map = L.map('mapContainer').setView([43.7, -79.4], 10);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+        }
+        
+        // Load and display the GeoJSON file
+        if (!geojsonLayer) {
+            fetch('Toronto_Neighbourhoods.geojson')
+                .then(response => response.json())
+                .then(data => {
+                    geojsonLayer = L.geoJSON(data, {
+                        style: {
+                            fillColor: 'blue',
+                            weight: 2,
+                            opacity: 1,
+                            color: 'white',
+                            fillOpacity: 0.7
+                        },
+                        onEachFeature: function(feature, layer) {
+                            layer.on('mouseover', function(e) {
+                                const areaName = feature.properties.AREA_NAME;
+                                L.popup()
+                                    .setLatLng(e.latlng)
+                                    .setContent(areaName)
+                                    .openOn(map);
+                            });
+                            
+                            layer.on('mouseout', function(e) {
+                                map.closePopup();
+                            });
+                            
+                            layer.on('click', function(e) {
+                                const areaName = feature.properties.AREA_NAME;
+                                showConfirmationPopup(areaName);
+                            });
+                        }
+                    }).addTo(map);
+                });
+        }
+    
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 100);
+}
+
+function selectNeighborhood(neighborhood) {
+    selectedNeighborhood = neighborhood;
+    showNeighborhoodPosts();
+}
+
+    function closeMapPopup() {
+        document.getElementById('mapPopup').style.display = 'none';
+    }
+        
+        function showNeighborhoodPosts() {
+            document.getElementById('location').innerHTML = 'My neighbourhood: <span class="selected-neighborhood">' + selectedNeighborhood + '</span>';
+            document.getElementById('locationButton').style.display = 'none';
+            document.getElementById('neighborhoodLinks').style.display = 'none';
+            document.getElementById('torontoImage').style.display = 'none';
+            document.getElementById('changeNeighborhoodButton').style.display = 'block';
+            document.getElementById('trendingContainer').style.display = 'none';
+            populateTable();
+        }
+
+        function changeNeighborhood() {
+        // Show the map popup instead of reloading the page
+        getLocation();
+    }
+
+        function populateTable() {
+            const table = document.getElementById('posts');
+            table.style.display = 'table';
+            let content = '';
+            for (let i = 0; i < 20; i++) {
+                content += generatePostHTML(postCount + i + 1);
+            }
+            table.innerHTML += content;
+            postCount += 20;
+            document.getElementById('loadMoreButton').style.display = 'block';
+        }
+
+        function showConfirmationPopup(areaName) {
+            document.getElementById('areaName').textContent = areaName;
+            document.getElementById('confirmationPopup').style.display = 'block';
+            selectedNeighborhood = areaName;
+        }
+
+        function closeConfirmationPopup(event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            document.getElementById('confirmationPopup').style.display = 'none';
+        }
+
+        function confirmAreaSelection() {
+            closeConfirmationPopup();
+            closeMapPopup();
+            showNeighborhoodPosts();
+        }
+
+    function generatePostHTML(userNumber) {
+        const tags = ["Blind item", "Missed Connection", "For sale", "Thoughts"];
+        const tagIndex = (userNumber - 1) % 4;
+        return `
+            <tr>
+                <td class="post-container">
+                    <div class="post-content-wrapper">
+                        <span class="post-headline">Here's where we met</span>
+                        <span class="post-tag">${tags[tagIndex]}</span><br>
+                        <span class="post-content">Here's where we met lorem ipsum. This is a sample post content - lorem ipusum, lorem ipsum. So we went to shake hands and I smiled. Lorem ipsum. | <span class="profile-name">User${userNumber}</span></span>
+                        <div class="reply-btn-wrapper">
+                            <button class="reply-btn" onclick="toggleReplyBox(this)">Reply</button>
+                            <span class="groovy-btn" onclick="incrementGroovy(this)" data-count="0">🤙<span class="groovy-count"></span></span>
+                        </div>
+                    </div>
+                    <div class="reply-box" style="display: none;">
+                        <textarea class="reply-textarea" placeholder="Write your reply here (max 500 characters)..." maxlength="500"></textarea>
+                        <button class="post-btn" onclick="submitReply(this)">Post</button>
+                    </div>
+                    <div class="reply-container"></div>
+                </td>
+            </tr>
+        `;
+    }
+
+    function incrementGroovy(button) {
+        let count = parseInt(button.getAttribute('data-count')) + 1;
+        button.setAttribute('data-count', count);
+        let countSpan = button.querySelector('.groovy-count');
+        countSpan.textContent = count > 0 ? count : '';
+    }
+
+    function toggleReplyBox(button) {
+            const postContainer = button.closest('.post-container');
+            const replyBox = postContainer.querySelector('.reply-box');
+            if (replyBox.style.display === 'none' || replyBox.style.display === '') {
+                replyBox.style.display = 'block';
+            } else {
+                replyBox.style.display = 'none';
+            }
+        }
+
+    function submitReply(button) {
+        const replyBox = button.closest('.reply-box');
+        const replyContent = replyBox.querySelector('.reply-textarea').value;
+        
+        if (replyContent.trim() === '') {
+            alert("Reply cannot be empty.");
+            return;
+        }
+
+        if (replyContent.length > 500) {
+            alert("Reply cannot exceed 500 characters.");
+            return;
+        }
+
+        const postContainer = replyBox.closest('.post-container');
+        const replyContainer = postContainer.querySelector('.reply-container');
+
+        const userNumber = Math.floor(Math.random() * 1000) + 1;
+        const replyHTML = `
+            <div class="reply">
+                <span class="reply-user">User${userNumber}</span>
+                <span class="reply-content">${replyContent}</span>
+            </div>
+        `;
+
+        replyContainer.innerHTML += replyHTML;
+        replyBox.style.display = 'none';
+        replyBox.querySelector('.reply-textarea').value = '';
+    }
+        function goToHomepage() {
+        location.reload();
+    }
+        function loadMorePosts() {
+            populateTable();
+        }
+    </script>
+</body>
+</html>
