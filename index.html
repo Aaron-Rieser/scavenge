@@ -62,6 +62,8 @@
             margin: 50px 0;
             padding: 10px 20px;
             font-size: 20px;
+            color: rgb(255, 255, 255);
+            background-color: #a54a4a;
         }
         .image-container {
             position: relative;
@@ -242,11 +244,21 @@
             display: block;
         }
         @media (max-width: 768px) {
+            .logo {
+            height: 45px; /* Reduced height by approximately 15% from 60px */
+        }
             .toronto-image {
                 width: 100%;
                 height: 100vh;
                 object-fit: cover;
                 object-position: center;
+            }
+            #locationButton button {
+                background-color: #a54a4a; /* Set background color */
+                color: rgb(255, 255, 255); /* Set text color */
+                border-radius: 0; /* Remove rounded edges */
+                padding: 15px 23px; /* Increase size by 15% */
+                font-size: 23px; /* Adjust font size for mobile */
             }
             .post-tag {
             display: inline-block; /* Change to inline-block to prevent full width */
@@ -432,7 +444,8 @@
     </header>
     
     <div id="locationButton" style="text-align: center;">
-        <button style="margin-top: 20px; margin-bottom: 15px;" onclick="getLocation()">Find posts near me</button> <!-- Added margin-top -->
+        <p style="color: white; text-align: center;">Welcome to scavenge.toronto user. Explore missed connections, blind items, and more based on your location. Start by finding posts in your neighbourhood, and enjoy your scavenge.</p> <!-- Added welcome text -->
+        <button style="margin-top: 20px; margin-bottom: 15px;" onclick="getLocation()">Find posts near me</button>
     </div>
     <div id="neighborhoodLinks" class="neighborhood-links">
         <a class="neighborhood-link" onclick="selectNeighborhood('The Annex')">The Annex</a>, 
@@ -512,18 +525,41 @@
         let map;
         let geojsonLayer;
         
-    function getLocation(neighborhood) {
+    function getLocation() {
+        // Use a geolocation API to get the user's location based on their IP address
+        fetch('https://ipapi.co/json/')
+            .then(response => response.json())
+            .then(data => {
+                const { latitude, longitude } = data;
+                // Set the map view to the user's location
+                map.setView([latitude, longitude], 12);
+                
+                // Check which area the user is in based on the GeoJSON data
+                if (geojsonLayer) {
+                    geojsonLayer.eachLayer(layer => {
+                        if (layer.getBounds().contains([latitude, longitude])) {
+                            const areaName = layer.feature.properties.AREA_NAME;
+                            showConfirmationPopup(areaName);
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching location:', error);
+                alert('Could not determine your location.');
+            });
+        
         // Show the map popup
         document.getElementById('mapPopup').style.display = 'block';
         
-        // Initialize the map
+        // Initialize the map if not already done
         if (!map) {
             map = L.map('mapContainer').setView([43.7, -79.4], 10);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
         }
-        
+
         // Load and display the GeoJSON file
         if (!geojsonLayer) {
             fetch('Toronto_Neighbourhoods.geojson')
@@ -535,7 +571,7 @@
                             weight: 2,
                             opacity: 1,
                             color: 'white',
-                            fillOpacity: 0.7
+                            fillOpacity: 0.5
                         },
                         onEachFeature: function(feature, layer) {
                             layer.on('mouseover', function(e) {
@@ -558,11 +594,11 @@
                     }).addTo(map);
                 });
         }
-    
-    setTimeout(() => {
-        map.invalidateSize();
-    }, 100);
-}
+
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 100);
+    }
 
 function selectNeighborhood(neighborhood) {
     selectedNeighborhood = neighborhood;
@@ -584,8 +620,58 @@ function selectNeighborhood(neighborhood) {
         }
 
         function changeNeighborhood() {
-        // Show the map popup instead of reloading the page
-        getLocation();
+        // Show the map popup without detecting IP
+        document.getElementById('mapPopup').style.display = 'block';
+        
+        // Initialize the map if not already done
+        if (!map) {
+            map = L.map('mapContainer').setView([43.7, -79.4], 10);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+        } else {
+            // Reset the map view to a default location
+            map.setView([43.7, -79.4], 10);
+        }
+
+        // Load and display the GeoJSON file if not already done
+        if (!geojsonLayer) {
+            fetch('Toronto_Neighbourhoods.geojson')
+                .then(response => response.json())
+                .then(data => {
+                    geojsonLayer = L.geoJSON(data, {
+                        style: {
+                            fillColor: 'blue',
+                            weight: 2,
+                            opacity: 1,
+                            color: 'white',
+                            fillOpacity: 0.5
+                        },
+                        onEachFeature: function(feature, layer) {
+                            layer.on('mouseover', function(e) {
+                                const areaName = feature.properties.AREA_NAME;
+                                L.popup()
+                                    .setLatLng(e.latlng)
+                                    .setContent(areaName)
+                                    .openOn(map);
+                            });
+                            
+                            layer.on('mouseout', function(e) {
+                                map.closePopup();
+                            });
+                            
+                            layer.on('click', function(e) {
+                                const areaName = feature.properties.AREA_NAME;
+                                showConfirmationPopup(areaName);
+                            });
+                        }
+                    }).addTo(map);
+                });
+        }
+
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 100);
     }
 
         function populateTable() {
