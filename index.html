@@ -144,14 +144,12 @@
         text-decoration: underline;
         }
         .post-tag {
-            display: inline;
-            background-color: grey;
-            color: white;
-            padding: 3px 6px;
-            font-size: 12px;
-            margin-left: 5px;
-            border-radius: 3px;
+            width: auto; /* Keep width auto for dynamic sizing */
+            text-align: left; /* Align text to the left */
+            margin-left: 0; /* Remove any left margin */
+            margin-bottom: 5px; /* Maintain spacing below the tag */
         }
+    }
         .profile-name {
             font-weight: bold;
             font-size: 13px;
@@ -183,10 +181,10 @@
         .reply-box {
         display: none;
         width: 100%;
-        margin-top: -20px;
+        margin-top: 20px; /* Increased space to move the reply box down */
         position: relative;
         padding-bottom: 40px; /* Add space for the button */
-        }
+    }
 
         .reply-textarea {
             width: 100%;
@@ -250,8 +248,21 @@
                 object-fit: cover;
                 object-position: center;
             }
+            .post-tag {
+            display: inline-block; /* Change to inline-block to prevent full width */
+            background-color: grey;
+            color: white;
+            padding: 3px 6px;
+            font-size: 12px;
+            margin-left: 5px;
+            border-radius: 3px;
+        }
+            .post-headline {
+                font-size: 19.8px; /* 10% increase from 18px */
+            }
             .post-container {
-                flex-direction: column;
+                margin-left: 5%; /* Increase left margin */
+                margin-right: 5%; /* Increase right margin */
             }
             .post-content-wrapper {
                 order: 1;
@@ -259,7 +270,7 @@
             .reply-btn-wrapper {
                 order: 2;
                 text-align: left;
-                margin-top: 10px; /* Added space between content and reply button */
+                margin-top: 25px; /* Added space between content and reply button */
             }
             .reply-container {
                 order: 3; /* Ensure replies appear after the post content and reply button */
@@ -615,8 +626,8 @@ function selectNeighborhood(neighborhood) {
             <tr>
                 <td class="post-container">
                     <div class="post-content-wrapper">
+                        <span class="post-tag">${tags[tagIndex]}</span><br> <!-- Moved above the headline -->
                         <span class="post-headline">Here's where we met</span>
-                        <span class="post-tag">${tags[tagIndex]}</span><br>
                         <span class="post-content">Here's where we met lorem ipsum. This is a sample post content - lorem ipusum, lorem ipsum. So we went to shake hands and I smiled. Lorem ipsum. | <span class="profile-name">User${userNumber}</span></span>
                         <div class="reply-btn-wrapper">
                             <button class="reply-btn" onclick="toggleReplyBox(this)">Reply</button>
