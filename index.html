@@ -5,19 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>scavenge.toronto</title>
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-
+    
     <style>
         body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif, sans-serif;
-            background-color: rgb(219, 86, 86);
+            font-family: "Inconsolata", system-ui; // Updated font-family;
+            background-color: black;
             color: white;
             margin: 0;
             padding: 0;
         }
         header {
-            background-color: rgb(115, 90, 226);
+            background-color: rgb(49, 40, 90);
             padding: 10px;
             text-align: center;
             position: sticky;
@@ -54,7 +58,7 @@
             }
         }
         button {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif, sans-serif;
+            font-family: "Inconsolata", system-ui; // Updated font-family
             margin: 50px 0;
             padding: 10px 20px;
             font-size: 20px;
@@ -72,7 +76,7 @@
             top: 50px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: rgb(115, 90, 226);
+            background-color: rgb(49, 40, 90);
             color: white;
             padding: 10px 20px;
             font-size: 20px;
@@ -165,7 +169,7 @@
         }
         .reply-btn {
             font-weight: bold;
-            background-color: rgb(115, 90, 226);
+            background-color: rgb(49, 40, 90);
             color: white;
             font-size: 15px;
             padding: 5px 10px;
@@ -255,7 +259,13 @@
             .reply-btn-wrapper {
                 order: 2;
                 text-align: left;
-                margin-top: 0; /* Removed space between content and reply button */
+                margin-top: 10px; /* Added space between content and reply button */
+            }
+            .reply-container {
+                order: 3; /* Ensure replies appear after the post content and reply button */
+            }
+            .reply-box {
+                order: 4; /* Ensure reply box appears after the replies */
             }
         }
 
@@ -266,7 +276,7 @@
         }
 
         .neighborhood-link {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif, sans-serif;
+            font-family: "Inconsolata", system-ui; // Updated font-family
             font-size: 14px;
             cursor: pointer;
             text-decoration: none;
@@ -280,7 +290,7 @@
         .neighborhood-link:nth-child(4n) { background-color: #a59d4a; }
         
         .change-neighborhood-btn {
-            font-family: Roboto, sans-serif;
+            font-family: "Inconsolata", system-ui; // Updated font-family
             margin: 20px 0;
             padding: 10px 20px;
             font-size: 20px;
@@ -307,7 +317,7 @@
             background: white;
             padding: 20px;
             border-radius: 5px;
-            box-shadow: 0 0 10px rgba(115, 90, 226);
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
         
         #mapContainer {
@@ -411,7 +421,7 @@
     </header>
     
     <div id="locationButton" style="text-align: center;">
-        <button onclick="getLocation()">Find posts near me</button>
+        <button style="margin-top: 20px; margin-bottom: 15px;" onclick="getLocation()">Find posts near me</button> <!-- Added margin-top -->
     </div>
     <div id="neighborhoodLinks" class="neighborhood-links">
         <a class="neighborhood-link" onclick="selectNeighborhood('The Annex')">The Annex</a>, 
@@ -610,7 +620,7 @@ function selectNeighborhood(neighborhood) {
                         <span class="post-content">Here's where we met lorem ipsum. This is a sample post content - lorem ipusum, lorem ipsum. So we went to shake hands and I smiled. Lorem ipsum. | <span class="profile-name">User${userNumber}</span></span>
                         <div class="reply-btn-wrapper">
                             <button class="reply-btn" onclick="toggleReplyBox(this)">Reply</button>
-                            <span class="groovy-btn" onclick="incrementGroovy(this)" data-count="0">💫<span class="groovy-count"></span></span>
+                            <span class="groovy-btn" onclick="incrementGroovy(this)" data-count="0">🤙<span class="groovy-count"></span></span>
                         </div>
                     </div>
                     <div class="reply-box" style="display: none;">
