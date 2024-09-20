@@ -39,7 +39,6 @@
 
         .title {
             font-size: 24px;
-            margin-right: 10px;
             flex-grow: 1;
             text-align: center;
             cursor: pointer;
@@ -50,11 +49,27 @@
         .title:hover {
             text-decoration: underline;
         }
+        @keyframes jiggle {
+            0% { transform: translateY(0); }
+            25% { transform: translateY(5px); }
+            50% { transform: translateY(-5px); }
+            75% { transform: translateY(3px); }
+            100% { transform: translateY(0); }
+        }
+
+    .jiggle {
+            animation: jiggle 0.5s ease; /* Adjust duration as needed */
+        }
 
         @media (min-width: 769px) {
             .logo {
                 height: 62px;
                 margin-left: 15px;
+            }
+            #locationButton p {
+                margin-left: 30%; /* Add left margin */
+                margin-right: 30%px; /* Add right margin */
+                text-align: center; /* Center the text */
             }
         }
         button {
@@ -122,7 +137,12 @@
         .trending-post-content {
             font-size: 12px;
         }
-
+        #locationButton p {
+            margin-left: 10%; /* Add left margin */
+            margin-right: 10%; /* Add right margin */
+            text-align: center; /* Center the text */
+        }
+    }
         .image-container {
             position: relative;
             width: 100%;
@@ -251,8 +271,8 @@
         }
         @media (max-width: 768px) {
             .logo {
-            height: 45px; /* Reduced height by approximately 15% from 60px */
-        }
+                height: 40px; /* Reduced height by approximately 15% from 60px */
+            }
             .post-container {
                 margin-left: -25px; /* Remove left margin */
                 margin-right: -25px; /* Remove right margin */
@@ -344,19 +364,35 @@
         #mapPopup {
             display: none;
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             z-index: 1000;
             background: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
         
         #mapContainer {
-            width: 600px;
-            height: 400px;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            color: white;
+            background-color: rgb(49, 40, 90);
+            width: auto;
+            height: auto;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         
         #confirmationPopup {
@@ -373,9 +409,9 @@
             background-color: #000000;
             color: white;
             border: none;
-            padding: 10px 15px;
             width: 100%;
-            font-size: 16px;
+            font-size: 20px; 
+            padding: 13px 20px;             
             cursor: pointer;
             position: relative;
         }
@@ -455,7 +491,7 @@
     </header>
     
     <div id="locationButton" style="text-align: center;">
-        <p style="color: white; text-align: center;">Welcome to scavenge.toronto user. Explore missed connections, blind items, and more based on your location. Start by finding posts in your neighbourhood, and enjoy your scavenge.</p> <!-- Added welcome text -->
+        <p style="color: white; text-align: center;">Welcome to scavenge.toronto. Explore missed connections, blind items, and more based on your location. Start by finding posts in your neighbourhood, and enjoy your scavenge.</p> <!-- Added welcome text -->
         <button style="margin-top: 20px; margin-bottom: 15px;" onclick="getLocation()">Find posts near me</button>
     </div>
     <div id="neighborhoodLinks" class="neighborhood-links">
@@ -537,6 +573,15 @@
         let geojsonLayer;
         
     function getLocation() {
+        // Add jiggle effect to the logo
+        const logo = document.querySelector('.logo');
+        logo.classList.add('jiggle');
+
+        // Remove the jiggle class after the animation ends
+        logo.addEventListener('animationend', () => {
+            logo.classList.remove('jiggle');
+        });
+        
         // Use a geolocation API to get the user's location based on their IP address
         fetch('https://ipapi.co/json/')
             .then(response => response.json())
@@ -631,6 +676,14 @@ function selectNeighborhood(neighborhood) {
         }
 
     function changeNeighborhood() {
+        // Add jiggle effect to the logo
+        const logo = document.querySelector('.logo');
+        logo.classList.add('jiggle');
+
+        // Remove the jiggle class after the animation ends
+        logo.addEventListener('animationend', () => {
+            logo.classList.remove('jiggle');
+        });
         // Show the map popup without detecting IP
         document.getElementById('mapPopup').style.display = 'block';
         
@@ -698,7 +751,8 @@ function selectNeighborhood(neighborhood) {
         }
 
         function showConfirmationPopup(areaName) {
-            document.getElementById('areaName').textContent = areaName;
+            document.getElementById('areaName').innerHTML = `<strong>${areaName}</strong>`; // Make area name bold
+            document.getElementById('confirmButton').innerHTML = `<strong>Click</strong> to explore <span id="areaName">${areaName}</span>`; // Update button text
             document.getElementById('confirmationPopup').style.display = 'block';
             selectedNeighborhood = areaName;
         }
