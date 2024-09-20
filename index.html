@@ -23,13 +23,18 @@
         header {
             background-color: rgb(49, 40, 90);
             padding: 10px;
-            text-align: center;
             position: sticky;
+            text-align: center;
             top: 0;
             z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: space-between;
+        }
+        main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
         }
         .logo {
             height: 60px;
@@ -369,31 +374,38 @@
             right: 0;
             bottom: 0;
             z-index: 1000;
-            background: white;
+            pointer-events: none; /* Prevents interaction with the map */
+            background: rgba(255, 255, 255, 0);
         }
         
         #mapContainer {
             width: 100%;
             height: 100%;
+            top: 78px;
+            pointer-events: auto; /* Allows interaction with the map */
         }
         
         .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            cursor: pointer;
-            font-size: 18px;
-            color: white;
-            background-color: rgb(49, 40, 90);
-            width: auto;
-            height: auto;
-            padding: 5px 10px;
-            border-radius: 5px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
+        position: absolute;
+        bottom: 10%; /* Adjusted to 10% from the bottom */
+        left: 50%; /* Center horizontally */
+        transform: translateX(-50%); /* Center the button */
+        cursor: pointer;
+        font-size: 18px;
+        color: white;
+        background-color: rgb(49, 40, 90);
+        width: 40px; /* Increased width for better visibility */
+        height: 40px; /* Increased height for better visibility */
+        border-radius: 5px; /* Added border radius for aesthetics */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .close-btn:hover {
+        background-color: #333;
+    }
         
         #confirmationPopup {
             display: none;
@@ -403,6 +415,7 @@
             transform: translate(-50%, -50%);
             z-index: 1001;
             width: 250px;
+            pointer-events: auto; /* Allow interaction with the confirmation popup */
         }
 
         #confirmButton {
@@ -471,7 +484,15 @@
         .reply-content {
             font-size: 10px;
         }
-
+        .close-map-button {
+            background-color: darkblue; /* Button background color */
+            color: white; /* Text color */
+            width: 100%; /* Full width */
+            padding: 8px; /* Padding around the text */
+            font-size: 16px; /* Font size */
+            border: none; /* Remove default border */
+            cursor: pointer; /* Change cursor to pointer on hover */
+        }
         .reply-textarea {
             width: 100%;
             height: 4em;
@@ -554,16 +575,29 @@
     <footer>🍁made in canada🍁</footer>
 
     <div id="mapPopup">
-        <div class="close-btn" onclick="closeMapPopup()">×</div>
         <div id="mapContainer"></div>
-    </div>
+        <div id="confirmationPopup">
+            <button id="confirmButton" onclick="confirmAreaSelection()">
+                Explore <span id="areaName"></span>
+                <span class="close-btn" onclick="closeConfirmationPopup(event)">×</span>
+            </button>
+        </div>
 
-    <div id="confirmationPopup">
-        <button id="confirmButton" onclick="confirmAreaSelection()">
-            Explore <span id="areaName"></span>
-            <span class="close-btn" onclick="closeConfirmationPopup(event)">×</span>
-        </button>
-    </div>
+        <div id="mapPopup">
+            <div id="mapContainer"></div>
+            
+            <div id="confirmationPopup" style="display: block;">
+                <button id="confirmButton" onclick="confirmAreaSelection()">
+                    Explore <span id="areaName"></span>
+                </button>
+                <span class="close-btn" onclick="closeConfirmationPopup(event)">×</span>
+                {{ edit_1 }}
+            </div>
+            
+            <div id="closeMapDiv" style="margin-top: 20px;"> <!-- New div for the close map button -->
+                <button id="closeMapButton" class="close-map-button" onclick="closeMapPopup()">Close Map</button>
+            </div>
+        </div>
 
     <script> 
         let postCount = 0;
@@ -662,7 +696,7 @@ function selectNeighborhood(neighborhood) {
 }
 
     function closeMapPopup() {
-        document.getElementById('mapPopup').style.display = 'none';
+        document.getElementById('mapPopup').style.display = 'none'; // Hide the map popup
     }
         
         function showNeighborhoodPosts() {
