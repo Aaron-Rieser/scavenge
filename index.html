@@ -23,18 +23,13 @@
         header {
             background-color: rgb(49, 40, 90);
             padding: 10px;
-            position: sticky;
             text-align: center;
+            position: sticky;
             top: 0;
             z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: space-between;
-        }
-        main {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
         }
         .logo {
             height: 60px;
@@ -44,6 +39,7 @@
 
         .title {
             font-size: 24px;
+            margin-right: 10px;
             flex-grow: 1;
             text-align: center;
             cursor: pointer;
@@ -54,27 +50,11 @@
         .title:hover {
             text-decoration: underline;
         }
-        @keyframes jiggle {
-            0% { transform: translateY(0); }
-            25% { transform: translateY(5px); }
-            50% { transform: translateY(-5px); }
-            75% { transform: translateY(3px); }
-            100% { transform: translateY(0); }
-        }
-
-    .jiggle {
-            animation: jiggle 0.5s ease; /* Adjust duration as needed */
-        }
 
         @media (min-width: 769px) {
             .logo {
                 height: 62px;
                 margin-left: 15px;
-            }
-            #locationButton p {
-                margin-left: 30%; /* Add left margin */
-                margin-right: 30%px; /* Add right margin */
-                text-align: center; /* Center the text */
             }
         }
         button {
@@ -142,12 +122,7 @@
         .trending-post-content {
             font-size: 12px;
         }
-        #locationButton p {
-            margin-left: 10%; /* Add left margin */
-            margin-right: 10%; /* Add right margin */
-            text-align: center; /* Center the text */
-        }
-    }
+
         .image-container {
             position: relative;
             width: 100%;
@@ -175,12 +150,6 @@
             text-align: left; /* Align text to the left */
             margin-left: 0; /* Remove any left margin */
             margin-bottom: 5px; /* Maintain spacing below the tag */
-            display: inline-block; /* Change to inline-block to prevent full width */
-            background-color: grey; /* Add background color */
-            color: white; /* Set text color */
-            padding: 3px 6px; /* Add padding for the box effect */
-            font-size: 12px; /* Set font size */
-            border-radius: 3px; /* Add rounded corners */
         }
     }
         .profile-name {
@@ -274,21 +243,53 @@
             margin: 20px auto;
             display: block;
         }
+        .map-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #mapPopup {
+            width: 90%;
+            height: 80%;
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #mapContainer {
+            flex-grow: 1;
+            width: 100%;
+            height: 100%;
+        }
+
+        #closeMapButton {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background-color: #00008B;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+
+
         @media (max-width: 768px) {
             .logo {
-                height: 40px; /* Reduced height by approximately 15% from 60px */
-            }
-            .post-container {
-                margin-left: -25px; /* Remove left margin */
-                margin-right: -25px; /* Remove right margin */
-                padding-left: -50px; /* Optional: Add slight padding if needed */
-                padding-right: -50px; /* Optional: Add slight padding if needed */
-            }
-            .post-content-wrapper {
-                margin-left: 0; /* Remove left margin */
-                margin-right: 0; /* Remove right margin */
-                order: 1;
-
+                height: 45px; /* Reduced height by approximately 15% from 60px */
             }
             .toronto-image {
                 width: 100%;
@@ -312,8 +313,38 @@
                 margin-left: 5px;
                 border-radius: 3px;
             }
+            .map-wrapper {
+                align-items: flex-start;
+                padding-top: 10vh; /* Start 9% from the top */
+            }
+
+            #mapPopup {
+                width: 100%;
+                height: 82vh; /* 100% - 9% top - 9% bottom */
+                border-radius: 0; 
+            }
+
+            #mapContainer {
+                height: calc(100%); /* Adjust for close button height */
+            }
+
+            #closeMapButton {
+                position: absolute;
+                bottom: 10px;
+                    left: 10px;
+                z-index: 1000;
+                font-size: 12px;
+                padding: 8px 12px;
+            }
             .post-headline {
                 font-size: 19.8px; /* 10% increase from 18px */
+            }
+            .post-container {
+                margin-left: 5%; /* Increase left margin */
+                margin-right: 5%; /* Increase right margin */
+            }
+            .post-content-wrapper {
+                order: 1;
             }
             .reply-btn-wrapper {
                 order: 2;
@@ -366,47 +397,6 @@
         .neighborhood-button:nth-child(4n+3) { background-color: #a54a4a; }
         .neighborhood-button:nth-child(4n) { background-color: #a59d4a; }
 
-        #mapPopup {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 1000;
-            pointer-events: none; /* Prevents interaction with the map */
-            background: rgba(255, 255, 255, 0);
-        }
-        
-        #mapContainer {
-            width: 100%;
-            height: 100%;
-            top: 78px;
-            pointer-events: auto; /* Allows interaction with the map */
-        }
-        
-        .close-btn {
-        position: absolute;
-        bottom: 10%; /* Adjusted to 10% from the bottom */
-        left: 50%; /* Center horizontally */
-        transform: translateX(-50%); /* Center the button */
-        cursor: pointer;
-        font-size: 18px;
-        color: white;
-        background-color: rgb(49, 40, 90);
-        width: 40px; /* Increased width for better visibility */
-        height: 40px; /* Increased height for better visibility */
-        border-radius: 5px; /* Added border radius for aesthetics */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-
-    .close-btn:hover {
-        background-color: #333;
-    }
-        
         #confirmationPopup {
             display: none;
             position: fixed;
@@ -414,62 +404,59 @@
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 1001;
-            width: 250px;
-            pointer-events: auto; /* Allow interaction with the confirmation popup */
+            background-color: transparent; /* Changed from white to transparent */
+            padding: 0; /* Removed padding */
+            border-radius: 0; /* Removed border-radius */
+            box-shadow: none; /* Removed box-shadow */
         }
 
         #confirmButton {
             background-color: #000000;
             color: white;
             border: none;
-            width: 100%;
-            font-size: 20px; 
-            padding: 13px 20px;             
+            padding: 12.5px 18.75px; /* Increased padding by 25% */
+            width: auto; /* Changed from 100% to auto */
+            font-size: 20px; /* Increased font size by 25% */
             cursor: pointer;
             position: relative;
         }
 
-        #confirmButton .close-btn {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 20px;
-            height: 20px;
-            background-color: #333;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        #confirmButton .close-btn:hover {
-            background-color: #555;
-        }
-
         .close-btn {
             position: absolute;
-            top: 0%;
-            right: 0px;
+            top: 5px;
+            right: 10px;
             cursor: pointer;
-            font-size: 18px;
-            color: white;
+            color: white; /* Changed color to white for visibility */
+        }
+
+        .map-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 9vh;
             background-color: rgb(49, 40, 90);
-            width: 20px;
-            height: 20px;
-            border-radius: 0;
-            display: flex;
+            display: none;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1001;
         }
 
-        .close-btn:hover {
-            background-color: #333;
+        .map-footer button {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 0;
         }
 
-                .reply {
+        .map-footer button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .reply {
             margin-left: 20px;
             border-left: 1px solid #444;
             padding-left: 10px;
@@ -484,15 +471,7 @@
         .reply-content {
             font-size: 10px;
         }
-        .close-map-button {
-            background-color: darkblue; /* Button background color */
-            color: white; /* Text color */
-            width: 100%; /* Full width */
-            padding: 8px; /* Padding around the text */
-            font-size: 16px; /* Font size */
-            border: none; /* Remove default border */
-            cursor: pointer; /* Change cursor to pointer on hover */
-        }
+
         .reply-textarea {
             width: 100%;
             height: 4em;
@@ -500,6 +479,10 @@
             margin-bottom: 10px;
             max-length: 500;
         }
+
+    #closeMapButton:hover {
+        background-color: #0000CD;
+    }
 </style>
         
     </style>
@@ -512,7 +495,7 @@
     </header>
     
     <div id="locationButton" style="text-align: center;">
-        <p style="color: white; text-align: center;">Welcome to scavenge.toronto. Explore missed connections, blind items, and more based on your location. Start by finding posts in your neighbourhood, and enjoy your scavenge.</p> <!-- Added welcome text -->
+        <p style="color: white; text-align: center;">Welcome to scavenge.toronto user. Explore missed connections, blind items, and more based on your location. Start by finding posts in your neighbourhood, and enjoy your scavenge.</p> <!-- Added welcome text -->
         <button style="margin-top: 20px; margin-bottom: 15px;" onclick="getLocation()">Find posts near me</button>
     </div>
     <div id="neighborhoodLinks" class="neighborhood-links">
@@ -574,30 +557,23 @@
     
     <footer>🍁made in canada🍁</footer>
 
-    <div id="mapPopup">
-        <div id="mapContainer"></div>
-        <div id="confirmationPopup">
-            <button id="confirmButton" onclick="confirmAreaSelection()">
-                Explore <span id="areaName"></span>
-                <span class="close-btn" onclick="closeConfirmationPopup(event)">×</span>
-            </button>
-        </div>
-
+    <div class="map-wrapper">
         <div id="mapPopup">
             <div id="mapContainer"></div>
-            
-            <div id="confirmationPopup" style="display: block;">
-                <button id="confirmButton" onclick="confirmAreaSelection()">
-                    Explore <span id="areaName"></span>
-                </button>
-                <span class="close-btn" onclick="closeConfirmationPopup(event)">×</span>
-                {{ edit_1 }}
-            </div>
-            
-            <div id="closeMapDiv" style="margin-top: 20px;"> <!-- New div for the close map button -->
-                <button id="closeMapButton" class="close-map-button" onclick="closeMapPopup()">Close Map</button>
-            </div>
+            <button id="closeMapButton" onclick="closeMapPopup()">Close map</button>
         </div>
+    </div>
+
+    <div id="confirmationPopup">
+        <button id="confirmButton" onclick="confirmAreaSelection()">
+            Explore <span id="areaName"></span>
+            <span class="close-btn" onclick="closeConfirmationPopup(event)">×</span>
+        </button>
+    </div>
+    
+    <div class="map-footer">
+        <button onclick="goToHomepage()">Select from list of neighbourhoods instead</button>
+    </div>
 
     <script> 
         let postCount = 0;
@@ -607,16 +583,11 @@
         let geojsonLayer;
         
     function getLocation() {
-        // Add jiggle effect to the logo
-        const logo = document.querySelector('.logo');
-        logo.classList.add('jiggle');
-
-        // Remove the jiggle class after the animation ends
-        logo.addEventListener('animationend', () => {
-            logo.classList.remove('jiggle');
-        });
-        
         // Use a geolocation API to get the user's location based on their IP address
+        document.querySelector('.map-wrapper').style.display = 'flex';
+        document.getElementById('mapPopup').style.display = 'flex';
+        document.querySelector('.map-footer').style.display = 'flex';
+
         fetch('https://ipapi.co/json/')
             .then(response => response.json())
             .then(data => {
@@ -638,10 +609,7 @@
                 console.error('Error fetching location:', error);
                 alert('Could not determine your location.');
             });
-        
-        // Show the map popup
-        document.getElementById('mapPopup').style.display = 'block';
-        
+                
         // Initialize the map if not already done
         if (!map) {
             map = L.map('mapContainer').setView([43.7, -79.4], 10);
@@ -696,7 +664,9 @@ function selectNeighborhood(neighborhood) {
 }
 
     function closeMapPopup() {
-        document.getElementById('mapPopup').style.display = 'none'; // Hide the map popup
+        document.getElementById('mapPopup').style.display = 'none';
+        document.querySelector('.map-wrapper').style.display = 'none';
+        document.querySelector('.map-footer').style.display = 'none';
     }
         
         function showNeighborhoodPosts() {
@@ -709,27 +679,21 @@ function selectNeighborhood(neighborhood) {
             populateTable();
         }
 
-    function changeNeighborhood() {
-        // Add jiggle effect to the logo
-        const logo = document.querySelector('.logo');
-        logo.classList.add('jiggle');
-
-        // Remove the jiggle class after the animation ends
-        logo.addEventListener('animationend', () => {
-            logo.classList.remove('jiggle');
-        });
+        function changeNeighborhood() {
         // Show the map popup without detecting IP
-        document.getElementById('mapPopup').style.display = 'block';
+        document.querySelector('.map-wrapper').style.display = 'flex';
+        document.getElementById('mapPopup').style.display = 'flex';
+        document.querySelector('.map-footer').style.display = 'flex';
         
         // Initialize the map if not already done
         if (!map) {
-            map = L.map('mapContainer').setView([43.7, -79.4], 10);
+            map = L.map('mapContainer').setView([43.7, -79.4], 11);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
         } else {
             // Reset the map view to a default location
-            map.setView([43.7, -79.4], 10);
+            map.setView([43.7, -79.4], 11);
         }
 
         // Load and display the GeoJSON file if not already done
@@ -785,12 +749,10 @@ function selectNeighborhood(neighborhood) {
         }
 
         function showConfirmationPopup(areaName) {
-            document.getElementById('areaName').innerHTML = `<strong>${areaName}</strong>`; // Make area name bold
-            document.getElementById('confirmButton').innerHTML = `<strong>Click</strong> to explore <span id="areaName">${areaName}</span>`; // Update button text
+            document.getElementById('areaName').textContent = areaName;
             document.getElementById('confirmationPopup').style.display = 'block';
             selectedNeighborhood = areaName;
         }
-
         function closeConfirmationPopup(event) {
             if (event) {
                 event.stopPropagation();
