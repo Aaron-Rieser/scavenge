@@ -177,28 +177,6 @@
             font-weight: bold;
             font-size: 13px;
         }
-        .post-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            transition: opacity 0.25s ease-out, transform 0.25s ease-out;            
-            width: 80%;
-            max-width: 800px;
-        }
-
-        .post-container.active {
-            display: block;
-        }
-
-        .post-container.wipe-out {
-            transform: translateY(-30px); /* Adjust this value to stop before the neighborhood bar */
-            opacity: 0;
-    }
-
-        .post-container.wipe-in {
-            transform: translate(-50%, 150%);
-        }
         .post-content-wrapper {
             margin-top: 5px; /* Reduced space between content and reply button */
             margin-bottom: 5px; /* Reduced space between content and reply button */
@@ -547,9 +525,9 @@
     }
     #posts {
         width: 100%;
-        padding-top: 60px; /* Adjust this value based on your neighborhood bar height */
-        overflow: hidden; /* Prevent scrollbars during animation */
-        height: calc(100vh - 150px); /* Adjust based on your header and footer height */
+        padding-top: 60px;
+        overflow: hidden;
+        height: calc(100vh - 150px);
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -562,10 +540,26 @@
         width: 80%;
         max-width: 800px;
         margin: 0 auto;
+        opacity: 0;
+        transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
     }
 
     .post-container.active {
         display: block;
+        opacity: 1;
+    }
+
+    .post-container.wipe-out {
+        transform: translate(-50%, -30px);
+        opacity: 0;
+    }
+
+    .post-container.wipe-in {
+        transform: translate(-50%, 150%);
     }
 
     #nextPostButton {
@@ -863,13 +857,16 @@ function selectNeighborhood(neighborhood) {
                     currentPost.classList.add('wipe-out');
                     setTimeout(() => {
                         currentPost.classList.remove('active', 'wipe-out');
+                        currentPost.style.display = 'none';
                     }, 250);
                 }
 
-                nextPost.classList.add('wipe-in', 'active');
+                nextPost.style.display = 'block';
+                nextPost.classList.add('wipe-in');
                 setTimeout(() => {
                     nextPost.classList.remove('wipe-in');
-                }, 25);
+                    nextPost.classList.add('active');
+                }, 10);
 
                 currentPostIndex++;
             } else {
