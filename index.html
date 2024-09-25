@@ -178,10 +178,26 @@
             font-size: 13px;
         }
         .post-container {
-            display: flex;
-            flex-direction: column;
-            margin-top: 30%;
-            margin-bottom: 30%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.25s ease-out, transform 0.25s ease-out;            
+            width: 80%;
+            max-width: 800px;
+        }
+
+        .post-container.active {
+            display: block;
+        }
+
+        .post-container.wipe-out {
+            transform: translateY(-30px); /* Adjust this value to stop before the neighborhood bar */
+            opacity: 0;
+    }
+
+        .post-container.wipe-in {
+            transform: translate(-50%, 150%);
         }
         .post-content-wrapper {
             margin-top: 5px; /* Reduced space between content and reply button */
@@ -383,6 +399,12 @@
             .reply-box {
                 order: 4; /* Ensure reply box appears after the replies */
             }
+            #posts {
+                height: calc(100vh - 100px); /* Adjust for mobile */
+            }
+            .post-container {
+                width: 90%;
+            }
         }
 
         .neighborhood-links {
@@ -405,18 +427,32 @@
         .neighborhood-link:nth-child(4n+3) { background-color: #a54a4a; }
         .neighborhood-link:nth-child(4n) { background-color: #a59d4a; }
         
+        .neighborhood-bar {
+            display: flex;
+            position: sticky;
+            top: 80px; /* Adjust this value based on your header height */
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(50, 40, 95, 0);
+            padding: 10px;
+            margin-top: 0px;
+        }
+
+        .selected-neighborhood {
+            color: white;
+            font-size: 16px;
+            margin-left: 5px;
+        }
+
         .change-neighborhood-btn {
-            font-family: "Inconsolata", system-ui; // Updated font-family
-            margin: 20px 0;
-            padding: 10px 20px;
-            font-size: 20px;
+            font-family: "Inconsolata", system-ui;
+            padding: 5px 10px;
+            font-size: 16px;
             background-color: #a54a4a;
             color: white;
             border: none;
             cursor: pointer;
-        }
-        .selected-neighborhood {
-            text-decoration: underline;
+            margin-right: 5px;
         }
         .neighborhood-button:nth-child(4n+1) { background-color: #4a6fa5; }
         .neighborhood-button:nth-child(4n+2) { background-color: #45a049; }
@@ -510,15 +546,28 @@
         background-color: #0000CD;
     }
     #posts {
-        width: 80%;
-        margin: 20px auto;
+        width: 100%;
+        padding-top: 60px; /* Adjust this value based on your neighborhood bar height */
+        overflow: hidden; /* Prevent scrollbars during animation */
+        height: calc(100vh - 150px); /* Adjust based on your header and footer height */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto;
     }
+
     .post-container {
         display: none;
+        width: 80%;
+        max-width: 800px;
+        margin: 0 auto;
     }
+
     .post-container.active {
         display: block;
     }
+
     #nextPostButton {
         display: block;
         margin: 20px auto;
@@ -528,6 +577,10 @@
         color: white;
         border: none;
         cursor: pointer;
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
     }
 </style>
         
@@ -539,6 +592,11 @@
         <h1 class="title" onclick="goToHomepage()">scavenge.toronto</h1>
         <div style="width: 62px;"></div>
     </header>
+
+    <div class="neighborhood-bar" id="neighborhoodBar" style="display: none;">
+        <span class="selected-neighborhood" id="selectedNeighborhoodDisplay"></span>
+        <button class="change-neighborhood-btn" onclick="changeNeighborhood()">Change neighbourhood</button>
+    </div>
     
     <div id="locationButton" style="text-align: center;">
         <p style="color: white; text-align: center;">Welcome to scavenge.toronto user. Explore missed connections, blind items, and more based on your location. Start by finding posts in your neighbourhood, and enjoy your scavenge.</p> <!-- Added welcome text -->
@@ -717,11 +775,11 @@ function selectNeighborhood(neighborhood) {
     }
         
         function showNeighborhoodPosts() {
-                document.getElementById('location').innerHTML = 'My neighbourhood: <span class="selected-neighborhood">' + selectedNeighborhood + '</span>';
+                document.getElementById('selectedNeighborhoodDisplay').textContent = selectedNeighborhood;
+                document.getElementById('neighborhoodBar').style.display = 'flex';
                 document.getElementById('locationButton').style.display = 'none';
                 document.getElementById('neighborhoodLinks').style.display = 'none';
                 document.getElementById('torontoImage').style.display = 'none';
-                document.getElementById('changeNeighborhoodButton').style.display = 'block';
                 document.getElementById('trendingContainer').style.display = 'none';
                 document.getElementById('nextPostButton').style.display = 'block';
                 populatePosts();
@@ -798,8 +856,21 @@ function selectNeighborhood(neighborhood) {
         function showNextPost() {
             const posts = document.querySelectorAll('.post-container');
             if (currentPostIndex < posts.length) {
-                posts.forEach(post => post.classList.remove('active'));
-                posts[currentPostIndex].classList.add('active');
+                const currentPost = posts[currentPostIndex - 1];
+                const nextPost = posts[currentPostIndex];
+
+                if (currentPost) {
+                    currentPost.classList.add('wipe-out');
+                    setTimeout(() => {
+                        currentPost.classList.remove('active', 'wipe-out');
+                    }, 250);
+                }
+
+                nextPost.classList.add('wipe-in', 'active');
+                setTimeout(() => {
+                    nextPost.classList.remove('wipe-in');
+                }, 25);
+
                 currentPostIndex++;
             } else {
                 // All posts have been shown, generate more
