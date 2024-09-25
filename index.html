@@ -9,6 +9,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&display=swap" rel="stylesheet">
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     
@@ -139,11 +143,28 @@
             padding-top: 20px
             border-bottom; 1px solid #444;
         }
+        .inter-post {
+            font-family: "Inter", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+        }
+
         .post-headline {
-        font-weight: bold;
-        font-size: 18px;
-        margin-right: 5px;
-        text-decoration: underline;
+            font-weight: bold;
+            font-size: 30px;
+            margin-right: 5px;
+            font-family: "Inter", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 700;
+            font-style: normal;
+        }
+
+        .post-content {
+            font-family: "Inter", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
         }
         .post-tag {
             width: auto; /* Keep width auto for dynamic sizing */
@@ -159,10 +180,13 @@
         .post-container {
             display: flex;
             flex-direction: column;
+            margin-top: 30%;
+            margin-bottom: 30%;
         }
         .post-content-wrapper {
             margin-top: 5px; /* Reduced space between content and reply button */
             margin-bottom: 5px; /* Reduced space between content and reply button */
+        ;
         }
         .reply-btn-wrapper {
             margin-top: 10; /* Removed space between content and reply button */
@@ -337,11 +361,13 @@
                 padding: 8px 12px;
             }
             .post-headline {
-                font-size: 19.8px; /* 10% increase from 18px */
+                font-size: 30px; /* 10% increase from 18px */
             }
             .post-container {
                 margin-left: 5%; /* Increase left margin */
                 margin-right: 5%; /* Increase right margin */
+                margin-top: 30%;
+                margin-bottom: 30%;
             }
             .post-content-wrapper {
                 order: 1;
@@ -483,6 +509,26 @@
     #closeMapButton:hover {
         background-color: #0000CD;
     }
+    #posts {
+        width: 80%;
+        margin: 20px auto;
+    }
+    .post-container {
+        display: none;
+    }
+    .post-container.active {
+        display: block;
+    }
+    #nextPostButton {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        font-size: 18px;
+        background-color: #a54a4a;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
 </style>
         
     </style>
@@ -544,10 +590,11 @@
     <div id="changeNeighborhoodButton" style="text-align: center; display: none;">
         <button class="change-neighborhood-btn" onclick="changeNeighborhood()">Change neighbourhood</button>
     </div>
+    <div id="posts">
+        <!-- Posts will be dynamically added here -->
+    </div>
     
-    <table id="posts" style="display: none;">
-        <!-- Table content will be dynamically populated -->
-    </table>
+    <button id="nextPostButton" style="display: none;" onclick="showNextPost()">See next post</button>
     
     <div id="loadMoreButton" style="text-align: center; display: none;">
         <button onclick="loadMorePosts()">Show more posts</button>
@@ -577,8 +624,8 @@
 
     <script> 
         let postCount = 0;
+        let currentPostIndex = 0;
         let selectedNeighborhood = '';
-    
         let map;
         let geojsonLayer;
         
@@ -670,14 +717,15 @@ function selectNeighborhood(neighborhood) {
     }
         
         function showNeighborhoodPosts() {
-            document.getElementById('location').innerHTML = 'My neighbourhood: <span class="selected-neighborhood">' + selectedNeighborhood + '</span>';
-            document.getElementById('locationButton').style.display = 'none';
-            document.getElementById('neighborhoodLinks').style.display = 'none';
-            document.getElementById('torontoImage').style.display = 'none';
-            document.getElementById('changeNeighborhoodButton').style.display = 'block';
-            document.getElementById('trendingContainer').style.display = 'none';
-            populateTable();
-        }
+                document.getElementById('location').innerHTML = 'My neighbourhood: <span class="selected-neighborhood">' + selectedNeighborhood + '</span>';
+                document.getElementById('locationButton').style.display = 'none';
+                document.getElementById('neighborhoodLinks').style.display = 'none';
+                document.getElementById('torontoImage').style.display = 'none';
+                document.getElementById('changeNeighborhoodButton').style.display = 'block';
+                document.getElementById('trendingContainer').style.display = 'none';
+                document.getElementById('nextPostButton').style.display = 'block';
+                populatePosts();
+            }
 
         function changeNeighborhood() {
         // Show the map popup without detecting IP
@@ -736,16 +784,27 @@ function selectNeighborhood(neighborhood) {
         }, 100);
     }
 
-        function populateTable() {
-            const table = document.getElementById('posts');
-            table.style.display = 'table';
-            let content = '';
+        function populatePosts() {
+            const postsContainer = document.getElementById('posts');
+            postsContainer.innerHTML = '';
             for (let i = 0; i < 20; i++) {
-                content += generatePostHTML(postCount + i + 1);
+                postsContainer.innerHTML += generatePostHTML(postCount + i + 1);
             }
-            table.innerHTML += content;
             postCount += 20;
-            document.getElementById('loadMoreButton').style.display = 'block';
+            currentPostIndex = 0;
+            showNextPost();
+        }
+
+        function showNextPost() {
+            const posts = document.querySelectorAll('.post-container');
+            if (currentPostIndex < posts.length) {
+                posts.forEach(post => post.classList.remove('active'));
+                posts[currentPostIndex].classList.add('active');
+                currentPostIndex++;
+            } else {
+                // All posts have been shown, generate more
+                populatePosts();
+            }
         }
 
         function showConfirmationPopup(areaName) {
@@ -766,15 +825,14 @@ function selectNeighborhood(neighborhood) {
             showNeighborhoodPosts();
         }
 
-    function generatePostHTML(userNumber) {
-        const tags = ["Blind item", "Missed Connection", "For sale", "Thoughts"];
-        const tagIndex = (userNumber - 1) % 4;
-        return `
-            <tr>
-                <td class="post-container">
-                    <div class="post-content-wrapper">
-                        <span class="post-tag">${tags[tagIndex]}</span><br> <!-- Moved above the headline -->
-                        <span class="post-headline">Here's where we met</span>
+        function generatePostHTML(userNumber) {
+            const tags = ["Blind item", "Missed Connection", "For sale", "Thoughts"];
+            const tagIndex = (userNumber - 1) % 4;
+            return `
+                <div class="post-container">
+                    <div class="post-content-wrapper inter-post">
+                        <span class="post-tag">${tags[tagIndex]}</span><br>
+                        <span class="post-headline">Here's where we met</span><br>
                         <span class="post-content">Here's where we met lorem ipsum. This is a sample post content - lorem ipusum, lorem ipsum. So we went to shake hands and I smiled. Lorem ipsum. | <span class="profile-name">User${userNumber}</span></span>
                         <div class="reply-btn-wrapper">
                             <button class="reply-btn" onclick="toggleReplyBox(this)">Reply</button>
@@ -786,10 +844,9 @@ function selectNeighborhood(neighborhood) {
                         <button class="post-btn" onclick="submitReply(this)">Post</button>
                     </div>
                     <div class="reply-container"></div>
-                </td>
-            </tr>
-        `;
-    }
+                </div>
+            `;
+        }
 
     function incrementGroovy(button) {
         let count = parseInt(button.getAttribute('data-count')) + 1;
