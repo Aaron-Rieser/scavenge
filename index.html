@@ -218,15 +218,6 @@
         .reply-btn-wrapper {
             margin-top: 10; /* Removed space between content and reply button */
         }
-        .reply-btn {
-            font-weight: bold;
-            background-color: rgb(49, 40, 90);
-            color: white;
-            font-size: 15px;
-            padding: 5px 10px;
-            margin-top: 10px;
-            display: inline-block;
-        }
         .reply-btn:hover {
         background-color: #a54a4a; /* Light blue highlight */
         }
@@ -268,23 +259,40 @@
             z-index: 1000;
             position: relative; /* Change to relative */
         }
+        .reply-btn {
+            font-weight: bold;
+            background-color: blue; /* Set background color to blue */
+            color: white; /* Text color */
+            font-size: 15px; /* Font size */
+            padding: 5px 10px; /* Padding */
+            border: none; /* Remove border */
+            cursor: pointer; /* Pointer cursor */
+        }
+
         .groovy-btn {
             cursor: pointer;
+            color: transparent;
             margin-left: 10px;
             display: inline-block; /* Change to inline-block */
+            background-color: transparent; /* Transparent background */
+            padding: 0; /* Remove padding */
+            font-size: 15px; /* Font size */
+            justify-content: center; /* Center the buttons horizontally */
+            align-items: center; /* Center the buttons vertically */
         }
-        .groovy-btn:hover::after {
-            content: "This post is groovy";
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #333;
-            color: white;
-            padding: 5px;
-            border-radius: 3px;
-            font-size: 12px;
-            white-space: nowrap;
+
+        #nextPostButton {
+            margin: 0 10px; /* Add some space between buttons */
+            padding: 10px 20px; /* Consistent padding */
+            font-size: 15px; /* Consistent font size */
+            background-color: #a54a4a; /* Consistent background color */
+            color: white; /* Text color */
+            border: none; /* Remove border */
+            cursor: pointer; /* Pointer cursor */
+        }
+
+        #nextPostButton:hover {
+            background-color: #8b3e3e; /* Darker shade on hover */
         }
         .groovy-count {
             font-size: 12px;
@@ -376,6 +384,10 @@
                 object-position: center;
                 margin: 0; /* Remove any margin for mobile */
             }
+            .reply-btn, .groovy-btn, #nextPostButton {
+                font-size: 75%; /* Shrink font size by 25% */
+                padding: 5px 10px; /* Adjust padding */
+            }
             #locationButton button {
                 background-color: #a54a4a; /* Set background color */
                 color: rgb(255, 255, 255); /* Set text color */
@@ -427,11 +439,6 @@
             }
             .post-content-wrapper {
                 order: 1;
-            }
-            .reply-btn-wrapper {
-                order: 2;
-                text-align: left;
-                margin-top: 25px; /* Added space between content and reply button */
             }
             .reply-container {
                 order: 3; /* Ensure replies appear after the post content and reply button */
@@ -630,22 +637,22 @@
 
     #actionButtons {
         display: flex;
-        justify-content: center; /* Center the buttons */
+        justify-content: space-between; /* Distribute space evenly between buttons */
         position: fixed; /* Keep it fixed at the bottom */
         bottom: 20px; /* Distance from the bottom */
-        left: 50%; /* Center horizontally */
-        transform: translateX(-50%); /* Adjust for centering */
+        left: -50px; /* Add left margin */
+        right: 20px; /* Add right margin */
         z-index: 1000; /* Ensure it appears above other content */
+        padding: 0; /* Remove padding to avoid extra space */
     }
 
     .reply-btn, .groovy-btn, #nextPostButton {
-        margin: 0 10px; /* Add some space between buttons */
-        padding: 10px 20px; /* Consistent padding */
-        font-size: 18px; /* Consistent font size */
-        background-color: #a54a4a; /* Consistent background color */
+        margin: 0 5px; /* Add some space between buttons */
+        font-size: 15px; /* Consistent font size */
         color: white; /* Text color */
         border: none; /* Remove border */
         cursor: pointer; /* Pointer cursor */
+        white-space: nowrap; /* Prevent text wrapping */
     }
 
     .reply-btn:hover, .groovy-btn:hover, #nextPostButton:hover {
@@ -724,9 +731,9 @@
     </div>
     
     <div id="actionButtons" style="text-align: center; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: none;">
+        <button id="nextPostButton" style="display: block;" onclick="showNextPost()">See next post</button>
         <button class="reply-btn" onclick="toggleReplyBox(this)">Reply</button>
         <span class="groovy-btn" onclick="incrementGroovy(this)" data-count="0">🤙<span class="groovy-count"></span></span>
-        <button id="nextPostButton" style="display: block;" onclick="showNextPost()">See next post</button>
     </div>
     
     <div id="loadMoreButton" style="text-align: center; display: none;">
