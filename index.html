@@ -20,11 +20,12 @@
     
     <style>
         body {
-            font-family: "Inconsolata", system-ui; // Updated font-family;
+            font-family: "Inconsolata", system-ui; /* Updated font-family */
             background-color: black;
             color: white;
             margin: 0;
             padding: 0;
+            overflow-x: hidden; /* Prevent horizontal scrollbar */
         }
         header {
             background-color: rgb(49, 40, 90);
@@ -627,20 +628,31 @@
         opacity: 1;
     }
 
-    #nextPostButton {
-        display: block;
-        margin: 20px auto;
-        padding: 10px 20px;
-        font-size: 18px;
-        background-color: #a54a4a;
-        color: white;
-        border: none;
-        cursor: pointer;
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
+    #actionButtons {
+        display: flex;
+        justify-content: center; /* Center the buttons */
+        position: fixed; /* Keep it fixed at the bottom */
+        bottom: 20px; /* Distance from the bottom */
+        left: 50%; /* Center horizontally */
+        transform: translateX(-50%); /* Adjust for centering */
+        z-index: 1000; /* Ensure it appears above other content */
     }
+
+    .reply-btn, .groovy-btn, #nextPostButton {
+        margin: 0 10px; /* Add some space between buttons */
+        padding: 10px 20px; /* Consistent padding */
+        font-size: 18px; /* Consistent font size */
+        background-color: #a54a4a; /* Consistent background color */
+        color: white; /* Text color */
+        border: none; /* Remove border */
+        cursor: pointer; /* Pointer cursor */
+    }
+
+    .reply-btn:hover, .groovy-btn:hover, #nextPostButton:hover {
+        background-color: #8b3e3e; /* Darker shade on hover */
+    }
+
+
 </style>
         
     </style>
@@ -711,7 +723,11 @@
         <!-- Posts will be dynamically added here -->
     </div>
     
-    <button id="nextPostButton" style="display: none;" onclick="showNextPost()">See next post</button>
+    <div id="actionButtons" style="text-align: center; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: none;">
+        <button class="reply-btn" onclick="toggleReplyBox(this)">Reply</button>
+        <span class="groovy-btn" onclick="incrementGroovy(this)" data-count="0">🤙<span class="groovy-count"></span></span>
+        <button id="nextPostButton" style="display: block;" onclick="showNextPost()">See next post</button>
+    </div>
     
     <div id="loadMoreButton" style="text-align: center; display: none;">
         <button onclick="loadMorePosts()">Show more posts</button>
@@ -833,16 +849,16 @@ function selectNeighborhood(neighborhood) {
         document.querySelector('.map-footer').style.display = 'none';
     }
         
-        function showNeighborhoodPosts() {
-                document.getElementById('selectedNeighborhoodDisplay').textContent = selectedNeighborhood;
-                document.getElementById('neighborhoodBar').style.display = 'flex';
-                document.getElementById('locationButton').style.display = 'none';
-                document.getElementById('neighborhoodLinks').style.display = 'none';
-                document.getElementById('torontoImage').style.display = 'none';
-                document.getElementById('trendingContainer').style.display = 'none';
-                document.getElementById('nextPostButton').style.display = 'block';
-                populatePosts();
-            }
+    function showNeighborhoodPosts() {
+        document.getElementById('selectedNeighborhoodDisplay').textContent = selectedNeighborhood;
+        document.getElementById('neighborhoodBar').style.display = 'flex';
+        document.getElementById('locationButton').style.display = 'none';
+        document.getElementById('neighborhoodLinks').style.display = 'none';
+        document.getElementById('torontoImage').style.display = 'none';
+        document.getElementById('trendingContainer').style.display = 'none';
+        document.getElementById('actionButtons').style.display = 'flex'; // Show action buttons
+        populatePosts();
+    }
 
         function changeNeighborhood() {
         // Show the map popup without detecting IP
@@ -1021,8 +1037,6 @@ function selectNeighborhood(neighborhood) {
                     <span class="post-headline">Here's where we met</span><br>
                     <span class="post-content">Here's where we met lorem ipsum. This is a sample post content - lorem ipusum, lorem ipsum. So we went to shake hands and I smiled. Lorem ipsum. | <span class="profile-name">User${userNumber}</span></span>
                     <div class="reply-btn-wrapper">
-                        <button class="reply-btn" onclick="toggleReplyBox(this)">Reply</button>
-                        <span class="groovy-btn" onclick="incrementGroovy(this)" data-count="0">🤙<span class="groovy-count"></span></span>
                     </div>
                 </div>
                 <div class="reply-box" style="display: none;">
@@ -1051,35 +1065,36 @@ function selectNeighborhood(neighborhood) {
             }
         }
 
-    function submitReply(button) {
-        const replyBox = button.closest('.reply-box');
-        const replyContent = replyBox.querySelector('.reply-textarea').value;
-        
-        if (replyContent.trim() === '') {
-            alert("Reply cannot be empty.");
-            return;
+        function submitReply(button) {
+            const postContainer = button.closest('.post-container');
+            const replyBox = postContainer.querySelector('.reply-box');
+            const replyContent = replyBox.querySelector('.reply-textarea').value; // Get the reply content from the textarea in the current post
+
+            if (replyContent.trim() === '') {
+                alert("Reply cannot be empty.");
+                return;
+            }
+
+            if (replyContent.length > 500) {
+                alert("Reply cannot exceed 500 characters.");
+                return;
+            }
+
+            const userNumber = Math.floor(Math.random() * 1000) + 1;
+            const replyHTML = `
+                <div class="reply">
+                    <span class="reply-user">User${userNumber}</span>
+                    <span class="reply-content">${replyContent}</span>
+                </div>
+            `;
+
+            // Append the reply to the current post
+            const replyContainer = postContainer.querySelector('.reply-container');
+            replyContainer.innerHTML += replyHTML;
+
+            // Clear the textarea
+            replyBox.querySelector('.reply-textarea').value = '';
         }
-
-        if (replyContent.length > 500) {
-            alert("Reply cannot exceed 500 characters.");
-            return;
-        }
-
-        const postContainer = replyBox.closest('.post-container');
-        const replyContainer = postContainer.querySelector('.reply-container');
-
-        const userNumber = Math.floor(Math.random() * 1000) + 1;
-        const replyHTML = `
-            <div class="reply">
-                <span class="reply-user">User${userNumber}</span>
-                <span class="reply-content">${replyContent}</span>
-            </div>
-        `;
-
-        replyContainer.innerHTML += replyHTML;
-        replyBox.style.display = 'none';
-        replyBox.querySelector('.reply-textarea').value = '';
-    }
         function goToHomepage() {
         location.reload();
     }
