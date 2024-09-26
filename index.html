@@ -29,33 +29,47 @@
         header {
             background-color: rgb(49, 40, 90);
             padding: 10px;
-            text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1002; /* Increase z-index to be above the map */
         }
+
         .logo {
             height: 60px;
             width: auto;
             cursor: pointer;
+            margin-right: 10px;
         }
 
         .title {
             font-size: 24px;
-            margin-right: 10px;
-            flex-grow: 1;
-            text-align: center;
             cursor: pointer;
             text-decoration: none;
             color: white;
+        }
+        .title .bold {
+        font-weight: bold;
+        }
+
+        .title .normal {
+            font-weight: normal;
         }
 
         .title:hover {
             text-decoration: underline;
         }
+
+        .welcome-text {
+        color: white;
+        text-align: center;
+        margin-bottom: 20px;
+        font-family: "Inconsolata", system-ui;
+        margin-left: 30%;
+        margin-right: 30%;
+    }
+    }
 
         @media (min-width: 769px) {
             .logo {
@@ -78,8 +92,26 @@
             position: relative;
             width: 100%;
             max-width: 1920px;
-            margin: 20px auto;
             background-color: black;
+            margin-bottom: -600px;
+
+            overflow: hidden; /* Add this line */
+        }
+
+        .toronto-image {
+            width: 100%;
+            height: auto;
+            max-width: 1920px;
+            display: block;
+        }
+        
+        body {
+            margin-bottom: 0;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
         }
 
         .trending-title {
@@ -93,7 +125,7 @@
             font-size: 20px;
             text-align: center;
             width: 200px;
-            z-index: 1;
+            z-index: 2; /* Increase z-index */
         }
 
         .trending-posts {
@@ -105,7 +137,9 @@
             flex-direction: column;
             align-items: center;
             width: 300px;
-            z-index: 1;
+            z-index: 2; /* Increase z-index */
+            max-height: calc(100% - 105px); /* Limit height */
+            overflow-y: auto; /* Add scrolling if needed */
         }
 
         .trending-post {
@@ -130,13 +164,6 @@
 
         .trending-post-content {
             font-size: 12px;
-        }
-
-        .image-container {
-            position: relative;
-            width: 100%;
-            max-width: 1920px;
-            margin: 20px auto;
         }
         table {
             width: 80%;
@@ -236,12 +263,9 @@
             text-align: center;
             padding: 10px;
             font-size: 12px;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
             background-color: black;
             z-index: 1000;
+            position: relative; /* Change to relative */
         }
         .groovy-btn {
             cursor: pointer;
@@ -269,7 +293,7 @@
             width: 100%;
             height: auto;
             max-width: 1920px;
-            margin: 20px auto;
+            margin: 0 ;
             display: block;
         }
         .map-wrapper {
@@ -286,13 +310,14 @@
         }
 
         #mapPopup {
-            width: 90%;
-            height: 80%;
+            width: 100%;
+            height: 81%; /* Reduced from 81% to 80% */
             background-color: white;
-            border-radius: 10px;
+            border-radius: 0px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            margin-top: 1vh; /* Added margin-top to move it down */
         }
 
         #mapContainer {
@@ -313,27 +338,42 @@
             cursor: pointer;
             z-index: 1000;
         }
+        @keyframes jiggle {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+            75% { transform: rotate(-5deg); }
+            100% { transform: rotate(0deg); }
+        }
 
-
+        .jiggle {
+            animation: jiggle 0.5s ease-in-out;
+        }
 
         @media (max-width: 768px) {
             .logo {
-                height: 36px; /* Reduced height by approximately 15% from 60px */
+            height: 36px;
+            }
+
+            .title {
+                font-size: 18px;
             }
             header {
             padding: 6px; /* Reduced padding to accommodate smaller header */
         }
-        .title {
-            font-size: 18px; /* Reduced font size for mobile */
-        }
-        #nextPostButton {
-            bottom: 30px; /* Moved button closer to bottom on mobile */
-        }
+            .welcome-text {
+                margin-left: 10%;
+                margin-right: 10%;
+            }
+            #nextPostButton {
+                bottom: 30px; /* Moved button closer to bottom on mobile */
+            }
             .toronto-image {
                 width: 100%;
                 height: 100vh;
                 object-fit: cover;
                 object-position: center;
+                margin: 0; /* Remove any margin for mobile */
             }
             #locationButton button {
                 background-color: #a54a4a; /* Set background color */
@@ -353,12 +393,13 @@
             }
             .map-wrapper {
                 align-items: flex-start;
-                padding-top: 10vh; /* Start 9% from the top */
+                padding-top: 8vh; /* Start 9% from the top */
             }
 
             #mapPopup {
                 width: 100%;
-                height: 82vh; /* 100% - 9% top - 9% bottom */
+                height: 83vh; /* 100% - 9% top - 9% bottom */
+                margin-top: 0; /* Reset margin-top for mobile */
                 border-radius: 0; 
             }
 
@@ -565,8 +606,7 @@
         max-width: 800px;
         margin: 0 auto;
         opacity: 0;
-        transition: opacity 0.25s ease-out, transform 0.25s ease-out;
-        position: absolute;
+        transition: opacity 0.25s ease-out, transform 0.25s ease-out;        position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
@@ -578,12 +618,13 @@
     }
 
     .post-container.wipe-out {
-        transform: translate(-50%, -30px);
+        transform: translate(-100%, 0); /* Wipe out to the left */
         opacity: 0;
     }
 
     .post-container.wipe-in {
-        transform: translate(-50%, 150%);
+        transform: translate(100%, 0); /* Wipe in from the right */
+        opacity: 1;
     }
 
     #nextPostButton {
@@ -607,8 +648,7 @@
 <body>
     <header>
         <img src="scavenge_logo_2.png" alt="Logo" class="logo" onclick="goToHomepage()">
-        <h1 class="title" onclick="goToHomepage()">scavenge.toronto</h1>
-        <div style="width: 62px;"></div>
+        <h1 class="title" onclick="goToHomepage()"><span class="bold">scavenge</span><span class="normal">.toronto</span></h1>        <div style="width: 62px;"></div>
     </header>
 
     <div class="neighborhood-bar" id="neighborhoodBar" style="display: none;">
@@ -617,7 +657,7 @@
     </div>
     
     <div id="locationButton" style="text-align: center;">
-        <p style="color: white; text-align: center;">Welcome to scavenge.toronto user. Explore missed connections, blind items, and more based on your location. Start by finding posts in your neighbourhood, and enjoy your scavenge.</p> <!-- Added welcome text -->
+        <p class="welcome-text">Welcome to scavenge. Explore missed connections 💘, blind items 🤫, nearby events 🥂and posts 📢 based on your location. Start by finding something new near you, and build your community.</p>
         <button style="margin-top: 20px; margin-bottom: 15px;" onclick="getLocation()">Find posts near me</button>
     </div>
     <div id="neighborhoodLinks" class="neighborhood-links">
@@ -638,6 +678,7 @@
         <a class="neighborhood-link" onclick="selectNeighborhood('Don Mills')">Don Mills</a>
     </div>
     <div class="image-container" id="trendingContainer">
+        <img src="toronto_image.jpg" alt="Toronto" class="toronto-image" id="torontoImage">
         <div class="trending-title">Trending posts</div>
         <div class="trending-posts">
             <div class="trending-post">
@@ -675,10 +716,8 @@
     <div id="loadMoreButton" style="text-align: center; display: none;">
         <button onclick="loadMorePosts()">Show more posts</button>
     </div>
-    
-    <img src="toronto_image.jpg" alt="Toronto" class="toronto-image" id="torontoImage">
-    
-    <footer>🍁made in canada🍁</footer>
+    </div>
+    <footer style="margin-top: 0;">🍁made in canada🍁</footer>
 
     <div class="map-wrapper">
         <div id="mapPopup">
@@ -888,7 +927,7 @@ function selectNeighborhood(neighborhood) {
             const nextPost = posts[currentPostIndex];
 
             if (currentPost) {
-                currentPost.classList.add('wipe-out');
+                currentPost.classList.add('wipe-out'); // Wipe out current post to the left
                 setTimeout(() => {
                     currentPost.classList.remove('active', 'wipe-out');
                     currentPost.style.display = 'none';
@@ -896,7 +935,7 @@ function selectNeighborhood(neighborhood) {
             }
 
             nextPost.style.display = 'block';
-            nextPost.classList.add('wipe-in');
+            nextPost.classList.add('wipe-in'); // Wipe in next post from the right
             setTimeout(() => {
                 nextPost.classList.remove('wipe-in');
                 nextPost.classList.add('active');
@@ -915,14 +954,14 @@ function selectNeighborhood(neighborhood) {
             const currentPost = posts[currentPostIndex - 1];
             const previousPost = posts[currentPostIndex - 2];
 
-            currentPost.classList.add('wipe-out');
+            currentPost.classList.add('wipe-out'); // Wipe out current post to the right
             setTimeout(() => {
                 currentPost.classList.remove('active', 'wipe-out');
                 currentPost.style.display = 'none';
             }, 250);
 
             previousPost.style.display = 'block';
-            previousPost.classList.add('wipe-in');
+            previousPost.classList.add('wipe-in'); // Wipe in previous post from the left
             setTimeout(() => {
                 previousPost.classList.remove('wipe-in');
                 previousPost.classList.add('active');
@@ -961,6 +1000,15 @@ function selectNeighborhood(neighborhood) {
         closeConfirmationPopup();
         closeMapPopup();
         showNeighborhoodPosts();
+        
+        // Add jiggle animation to the logo
+        const logo = document.querySelector('.logo');
+        logo.classList.add('jiggle');
+        
+        // Remove the jiggle class after the animation completes
+        setTimeout(() => {
+            logo.classList.remove('jiggle');
+        }, 500);
     }
 
     function generatePostHTML(userNumber) {
