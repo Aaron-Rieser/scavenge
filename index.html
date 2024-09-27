@@ -260,8 +260,7 @@
             position: relative; /* Change to relative */
         }
         .reply-btn {
-            font-weight: bold;
-            background-color: blue; /* Set background color to blue */
+            background-color: rgba(0, 0, 0, 0); /* Set background color to blue */
             color: white; /* Text color */
             font-size: 15px; /* Font size */
             padding: 5px 10px; /* Padding */
@@ -285,7 +284,7 @@
             margin: 0 10px; /* Add some space between buttons */
             padding: 10px 20px; /* Consistent padding */
             font-size: 15px; /* Consistent font size */
-            background-color: #a54a4a; /* Consistent background color */
+            background-color: #a54a4a00; /* Consistent background color */
             color: white; /* Text color */
             border: none; /* Remove border */
             cursor: pointer; /* Pointer cursor */
@@ -298,6 +297,17 @@
             font-size: 12px;
             margin-left: 3px;
         }
+        .nope-btn {
+                background-color: transparent; /* Transparent background */
+                color: white; /* Text color */
+                border: none; /* Remove border */
+                cursor: pointer; /* Pointer cursor */
+                font-size: 15px; /* Font size */
+            }
+
+            .nope-btn:hover {
+                background-color: rgba(255, 255, 255, 0.1); /* Red hover state */
+            }
         .toronto-image {
             width: 100%;
             height: auto;
@@ -446,12 +456,12 @@
             .reply-box {
                 order: 4; /* Ensure reply box appears after the replies */
             }
-            #posts {
-                height: calc(100vh - 100px); /* Adjust for mobile */
-            }
             .post-container {
                 width: 90%;
             }
+            #posts {
+            height: calc(100vh - 70px); /* Adjust height for mobile to fit the viewport */
+        }
         }
 
         .neighborhood-links {
@@ -598,9 +608,9 @@
     }
     #posts {
         width: 100%;
-        padding-top: 60px;
-        overflow: hidden;
-        height: calc(100vh - 175px);
+        padding-top: 60px; /* Space for the action buttons */
+        height: 50vh; /* Adjust height to fit the viewport minus button height */
+        overflow: hidden; /* Prevent scrolling */
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -635,17 +645,6 @@
         opacity: 1;
     }
 
-    #actionButtons {
-        display: flex;
-        justify-content: space-between; /* Distribute space evenly between buttons */
-        position: fixed; /* Keep it fixed at the bottom */
-        bottom: 20px; /* Distance from the bottom */
-        left: -50px; /* Add left margin */
-        right: 20px; /* Add right margin */
-        z-index: 1000; /* Ensure it appears above other content */
-        padding: 0; /* Remove padding to avoid extra space */
-    }
-
     .reply-btn, .groovy-btn, #nextPostButton {
         margin: 0 5px; /* Add some space between buttons */
         font-size: 15px; /* Consistent font size */
@@ -657,6 +656,31 @@
 
     .reply-btn:hover, .groovy-btn:hover, #nextPostButton:hover {
         background-color: #8b3e3e; /* Darker shade on hover */
+    }
+    #actionButtons {
+        display: flex;
+        justify-content: space-between; /* Distribute space evenly between buttons */
+        position: fixed; /* Keep it fixed at the bottom */
+        bottom: 20px; /* Distance from the bottom */
+        left: 0; /* Align to the left */
+        right: 0; /* Align to the right */
+        z-index: 1000; /* Ensure it appears above other content */
+        padding: 0; /* Remove padding to avoid extra space */
+    }
+
+    .action-button {
+        flex-grow: 1; /* Allow buttons to grow and fill the space */
+        margin: 0 5px; /* Add some space between buttons */
+        font-size: 15px; /* Adjust font size if needed */
+        color: white; /* Text color */
+        border: none; /* Remove border */
+        cursor: pointer; /* Pointer cursor */
+        text-align: center; /* Center text */
+        background-color: transparent; /* Default background */
+    }
+
+    .action-button:hover {
+        background-color: rgba(255, 255, 255, 0.1); /* Hover effect */
     }
 
 
@@ -730,17 +754,17 @@
         <!-- Posts will be dynamically added here -->
     </div>
     
-    <div id="actionButtons" style="text-align: center; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: none;">
-        <button id="nextPostButton" style="display: block;" onclick="showNextPost()">See next post</button>
-        <button class="reply-btn" onclick="toggleReplyBox(this)">Reply</button>
-        <span class="groovy-btn" onclick="incrementGroovy(this)" data-count="0">🤙<span class="groovy-count"></span></span>
+    <div id="actionButtons" style="text-align: center; display: none;">
+        <span class="groovy-btn action-button" onclick="incrementGroovy(this)" data-count="0">❤️<span class="groovy-count"></span></span>
+        <button id="nextPostButton" class="action-button" onclick="showNextPost()">See next post</button>
+        <button class="reply-btn action-button" onclick="toggleReplyBox(this)">Reply</button>
+        <button class="nope-btn action-button" onclick="handleNopeClick()">🚫</button>
     </div>
     
     <div id="loadMoreButton" style="text-align: center; display: none;">
         <button onclick="loadMorePosts()">Show more posts</button>
     </div>
     </div>
-    <footer style="margin-top: 0;">🍁made in canada🍁</footer>
 
     <div class="map-wrapper">
         <div id="mapPopup">
@@ -767,8 +791,8 @@
         let map;
         let geojsonLayer;
         let touchStartX = 0;
-let     touchEndX = 0;
-        
+        let touchEndX = 0;
+
     function getLocation() {
         // Use a geolocation API to get the user's location based on their IP address
         document.querySelector('.map-wrapper').style.display = 'flex';
