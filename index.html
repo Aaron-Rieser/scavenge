@@ -15,6 +15,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     
@@ -63,13 +67,17 @@
         }
 
         .welcome-text {
-        color: white;
-        text-align: center;
-        margin-bottom: 20px;
-        font-family: "Inconsolata", system-ui;
-        margin-left: 30%;
-        margin-right: 30%;
-    }
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: "Inconsolata", system-ui;
+            margin-left: 30%;
+            margin-right: 30%;
+        }
+        .post-content-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
     }
 
         @media (min-width: 769px) {
@@ -184,36 +192,37 @@
         }
 
         .post-headline {
-            font-weight: bold;
-            font-size: 30px;
+            font-family: "Barlow Condensed", sans-serif; /* Updated font-family */
+            font-weight: 500; /* Set font weight to 500 */
+            font-size: 35px;
             margin-right: 5px;
-            font-family: "Inter", sans-serif;
-            font-optical-sizing: auto;
-            font-weight: 700;
-            font-style: normal;
+            margin-bottom: 0.2em; /* Reduced to approximately one line */
+            line-height: 1.2; /* Add this to control the line height of the headline */
         }
 
         .post-content {
             font-family: "Inter", sans-serif;
             font-optical-sizing: auto;
-            font-weight: 400;
+            font-weight: 300;
+            font-size: 14px;
             font-style: normal;
+            line-height: 1.4; /* Add this to control the line height of the content */
         }
         .post-tag {
-            width: auto; /* Keep width auto for dynamic sizing */
-            text-align: left; /* Align text to the left */
-            margin-left: 0; /* Remove any left margin */
-            margin-bottom: 5px; /* Maintain spacing below the tag */
+            display: inline-block;
+            width: fit-content; /* This will make the width based on the content */
+            max-width: 100%; /* Fallback for browsers that don't support fit-content */
+            padding: 3px 6px;
+            background-color: grey;
+            color: white;
+            font-size: 12px;
+            margin-bottom: 15px;
+            border-radius: 3px;
+            white-space: nowrap; /* Prevents the tag from wrapping */
         }
-    }
         .profile-name {
             font-weight: bold;
             font-size: 13px;
-        }
-        .post-content-wrapper {
-            margin-top: 5px; /* Reduced space between content and reply button */
-            margin-bottom: 5px; /* Reduced space between content and reply button */
-        ;
         }
         .reply-btn-wrapper {
             margin-top: 10; /* Removed space between content and reply button */
@@ -379,7 +388,7 @@
             }
             header {
             padding: 6px; /* Reduced padding to accommodate smaller header */
-        }
+            }
             .welcome-text {
                 margin-left: 10%;
                 margin-right: 10%;
@@ -406,13 +415,8 @@
                 font-size: 23px; /* Adjust font size for mobile */
             }
             .post-tag {
-                display: inline-block; /* Change to inline-block to prevent full width */
-                background-color: grey;
-                color: white;
-                padding: 3px 6px;
-                font-size: 12px;
-                margin-left: 5px;
-                border-radius: 3px;
+                font-size: 11px; /* Slightly smaller font size for mobile */
+                padding: 2px 5px; /* Slightly less padding for mobile */
             }
             .map-wrapper {
                 align-items: flex-start;
@@ -439,11 +443,22 @@
                 padding: 8px 12px;
             }
             .post-headline {
-                font-size: 30px; /* 10% increase from 18px */
+                font-size: 30px; /* Already set in your original code */
+                margin-bottom: 0.4em; /* Slightly reduced for mobile */
+                line-height: 1.1; /* Slightly tighter line height for mobile */
+                margin-left: -3%;
+                margin-right: -3%;
+            }
+
+            .post-content {
+                font-size: 13px; /* Slightly smaller font size for mobile */
+                line-height: 1.3; /* Slightly tighter line height for mobile */
+                margin-left: -3%;
+                margin-right: -3%;
             }
             .post-container {
-                margin-left: 5%; /* Increase left margin */
-                margin-right: 5%; /* Increase right margin */
+                margin-left: 0%; /* Increase left margin */
+                margin-right: 0%; /* Increase right margin */
                 margin-top: 30%;
                 margin-bottom: 30%;
             }
@@ -455,9 +470,6 @@
             }
             .reply-box {
                 order: 4; /* Ensure reply box appears after the replies */
-            }
-            .post-container {
-                width: 90%;
             }
             #posts {
             height: calc(100vh - 70px); /* Adjust height for mobile to fit the viewport */
@@ -1059,25 +1071,25 @@ function selectNeighborhood(neighborhood) {
     }
 
     function generatePostHTML(userNumber) {
-        const tags = ["Blind item", "Missed Connection", "For sale", "Thoughts"];
-        const tagIndex = (userNumber - 1) % 4;
-        return `
-            <div class="post-container">
-                <div class="post-content-wrapper inter-post">
-                    <span class="post-tag">${tags[tagIndex]}</span><br>
-                    <span class="post-headline">Here's where we met</span><br>
-                    <span class="post-content">Here's where we met lorem ipsum. This is a sample post content - lorem ipusum, lorem ipsum. So we went to shake hands and I smiled. Lorem ipsum. | <span class="profile-name">User${userNumber}</span></span>
-                    <div class="reply-btn-wrapper">
+            const tags = ["Blind item", "Missed Connection", "For sale", "Thoughts"];
+            const tagIndex = (userNumber - 1) % 4;
+            return `
+                <div class="post-container">
+                    <div class="post-content-wrapper inter-post">
+                        <span class="post-tag">${tags[tagIndex]}</span>
+                        <span class="post-headline">Here's where we met</span>
+                        <span class="post-content">Here's where we met lorem ipsum. This is a sample post content - lorem ipusum, lorem ipsum. So we went to shake hands and I smiled. Lorem ipsum. | <span class="profile-name">User${userNumber}</span></span>
                     </div>
+                    <div class="reply-btn-wrapper">
+                        <!-- ... reply button ... -->
+                    </div>
+                    <div class="reply-box" style="display: none;">
+                        <!-- ... reply box content ... -->
+                    </div>
+                    <div class="reply-container"></div>
                 </div>
-                <div class="reply-box" style="display: none;">
-                    <textarea class="reply-textarea" placeholder="Write your reply here (max 500 characters)..." maxlength="500"></textarea>
-                    <button class="post-btn" onclick="submitReply(this)">Post</button>
-                </div>
-                <div class="reply-container"></div>
-            </div>
-        `;
-    }
+            `;
+        }
 
     function incrementGroovy(button) {
         let count = parseInt(button.getAttribute('data-count')) + 1;
