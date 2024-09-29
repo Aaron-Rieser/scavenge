@@ -27,16 +27,53 @@
             padding: 0;
             overflow-x: hidden; /* Prevent horizontal scrollbar */
         }
-        header {
-            background-color: rgb(49, 40, 90);
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1002; /* Increase z-index to be above the map */
-        }
+    header {
+        background-color: rgb(49, 40, 90);
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 1002;
+    }
 
+    .header-left {
+        display: flex;
+        align-items: center;
+    }
+
+    .header-right {
+        display: flex;
+        align-items: center;
+    }
+
+    .logo {
+        height: 60px;
+        width: auto;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+
+    .title {
+        font-size: 24px;
+        cursor: pointer;
+        text-decoration: none;
+        color: white;
+    }
+
+    #changeNeighborhoodIcon {
+        height: 24px;
+        width: 24px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        padding: 5px;
+        border-radius: 50%;
+    }
+
+    #changeNeighborhoodIcon:hover {
+        background-color: rgba(165, 74, 74, 0.2);
+    }
         .logo {
             height: 60px;
             width: auto;
@@ -378,14 +415,20 @@
 
         @media (max-width: 768px) {
             .logo {
-            height: 36px;
+                height: 36px;
             }
 
             .title {
                 font-size: 18px;
             }
+
             header {
-            padding: 6px; /* Reduced padding to accommodate smaller header */
+                padding: 6px;
+            }
+
+            #changeNeighborhoodIcon {
+                height: 20px;
+                width: 20px;
             }
             .welcome-text {
                 margin-left: 10%;
@@ -702,13 +745,17 @@
 </head>
 <body>
     <header>
-        <img src="scavenge_logo_2.png" alt="Logo" class="logo" onclick="goToHomepage()">
-        <h1 class="title" onclick="goToHomepage()"><span class="bold">scavenge</span><span class="normal">.toronto</span></h1>        <div style="width: 62px;"></div>
+        <div class="header-left">
+            <img src="scavenge_logo_2.png" alt="Logo" class="logo" onclick="goToHomepage()">
+            <h1 class="title" onclick="goToHomepage()"><span class="bold">scavenge</span><span class="normal">.toronto</span></h1>
+        </div>
+        <div class="header-right">
+            <img src="map-icon.png" alt="Change neighbourhood" id="changeNeighborhoodIcon" onclick="changeNeighborhood()" style="display: none;">
+        </div>
     </header>
-
+    
     <div class="neighborhood-bar" id="neighborhoodBar" style="display: none;">
         <span class="selected-neighborhood" id="selectedNeighborhoodDisplay"></span>
-        <button class="change-neighborhood-btn" onclick="changeNeighborhood()">Change neighbourhood</button>
     </div>
     
     <div id="locationButton" style="text-align: center;">
@@ -770,7 +817,7 @@
         <span class="groovy-btn action-button" onclick="incrementGroovy(this)" data-count="0">❤️<span class="groovy-count"></span></span>
         <button id="nextPostButton" class="action-button" onclick="showNextPost()">See next post</button>
         <button class="reply-btn action-button" onclick="toggleReplyBox(this)">Reply</button>
-        <button class="nope-btn action-button" onclick="handleNopeClick()">🚫</button>
+        <span class="nope-btn action-button" onclick="incrementNope(this)" data-count="0">🚫<span class="nope-count"></span></span>
     </div>
     
     <div id="loadMoreButton" style="text-align: center; display: none;">
@@ -899,7 +946,8 @@ function selectNeighborhood(neighborhood) {
         document.getElementById('neighborhoodLinks').style.display = 'none';
         document.getElementById('torontoImage').style.display = 'none';
         document.getElementById('trendingContainer').style.display = 'none';
-        document.getElementById('actionButtons').style.display = 'flex'; // Show action buttons
+        document.getElementById('actionButtons').style.display = 'flex';
+        document.getElementById('changeNeighborhoodIcon').style.display = 'block'; // Show the icon
         populatePosts();
     }
 
@@ -1002,6 +1050,8 @@ function selectNeighborhood(neighborhood) {
             setTimeout(() => {
                 nextPost.classList.remove('wipe-in');
                 nextPost.classList.add('active');
+                // Update the action buttons for the new post after it's fully visible
+                updateActionButtons();
             }, 10);
 
             currentPostIndex++;
@@ -1011,6 +1061,36 @@ function selectNeighborhood(neighborhood) {
         }
     }
 
+    function updateActionButtons() {
+        const actionButtons = document.getElementById('actionButtons');
+        const groovyBtn = actionButtons.querySelector('.groovy-btn');
+        const nopeBtn = actionButtons.querySelector('.nope-btn');
+
+        [groovyBtn, nopeBtn].forEach(btn => {
+            btn.setAttribute('data-count', '0');
+            const countSpan = btn.querySelector('.groovy-count, .nope-count');
+            if (countSpan) {
+                countSpan.textContent = '';
+            } else {
+                const newCountSpan = document.createElement('span');
+                newCountSpan.className = btn === groovyBtn ? 'groovy-count' : 'nope-count';
+                btn.appendChild(newCountSpan);
+            }
+        });
+
+        console.log('Action buttons reset'); // For debugging
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const nextPostButton = document.getElementById('nextPostButton');
+        if (nextPostButton) {
+            nextPostButton.addEventListener('click', () => {
+                showNextPost();
+                updateActionButtons(); // Update both groovy and nope buttons
+                console.log('Next post button clicked, action buttons updated'); // For debugging
+            });
+        }
+    });
     function showPreviousPost() {
         const posts = document.querySelectorAll('.post-container');
         if (currentPostIndex > 1) {
@@ -1033,19 +1113,6 @@ function selectNeighborhood(neighborhood) {
             currentPostIndex--;
         }
     }
-
-    document.addEventListener('DOMContentLoaded', (event) => {
-        const postsContainer = document.getElementById('posts');
-
-        postsContainer.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-        });
-
-        postsContainer.addEventListener('touchend', e => {
-            touchEndX = e.changedTouches[0].screenX;
-            checkDirection();
-        });
-    });
 
     function showConfirmationPopup(areaName) {
         document.getElementById('areaName').textContent = areaName;
@@ -1075,34 +1142,39 @@ function selectNeighborhood(neighborhood) {
     }
 
     function generatePostHTML(userNumber) {
-            const tags = ["Blind item", "Missed Connection", "For sale", "Thoughts"];
-            const tagIndex = (userNumber - 1) % 4;
-            return `
-                <div class="post-container">
-                    <div class="post-content-wrapper inter-post">
-                        <span class="post-headline">Here's where we met</span>
-                        <span class="post-content">Here's where we met lorem ipsum. This is a sample post content - lorem ipusum, lorem ipsum. So we went to shake hands and I smiled. Lorem ipsum.</span>
-                        
-                        <div class="post-tag-wrapper">
-                            <span class="post-tag">${tags[tagIndex]}</span>
-                            <span class="profile-name">User${userNumber}</span>
-                        </div>
+        const tags = ["Blind item", "Missed Connection", "For sale", "Thoughts"];
+        const tagIndex = (userNumber - 1) % 4;
+        return `
+            <div class="post-container">
+                <div class="post-content-wrapper inter-post">
+                    <span class="post-headline">Here's where we met</span>
+                    <span class="post-content">Here's where we met lorem ipsum. This is a sample post content - lorem ipusum, lorem ipsum. So we went to shake hands and I smiled. Lorem ipsum.</span>
+                    
+                    <div class="post-tag-wrapper">
+                        <span class="post-tag">${tags[tagIndex]}</span>
+                        <span class="profile-name">User${userNumber}</span>
                     </div>
-                    <div class="reply-btn-wrapper">
-                        <!-- ... reply button ... -->
-                    </div>
-                    <div class="reply-box" style="display: none;">
-                        <!-- ... reply box content ... -->
-                    </div>
-                    <div class="reply-container"></div>
                 </div>
-            `;
-        }
-
+                <div class="reply-btn-wrapper">
+                    <!-- ... reply button ... -->
+                </div>
+                <div class="reply-box" style="display: none;">
+                    <!-- ... reply box content ... -->
+                </div>
+                <div class="reply-container"></div>
+            </div>
+        `;
+    }
     function incrementGroovy(button) {
         let count = parseInt(button.getAttribute('data-count')) + 1;
         button.setAttribute('data-count', count);
         let countSpan = button.querySelector('.groovy-count');
+        countSpan.textContent = count > 0 ? count : '';
+    }
+    function incrementNope(button) {
+        let count = parseInt(button.getAttribute('data-count')) + 1;
+        button.setAttribute('data-count', count);
+        let countSpan = button.querySelector('.nope-count');
         countSpan.textContent = count > 0 ? count : '';
     }
 
@@ -1116,38 +1188,39 @@ function selectNeighborhood(neighborhood) {
             }
         }
 
-        function submitReply(button) {
-            const postContainer = button.closest('.post-container');
-            const replyBox = postContainer.querySelector('.reply-box');
-            const replyContent = replyBox.querySelector('.reply-textarea').value; // Get the reply content from the textarea in the current post
+    function submitReply(button) {
+        const postContainer = button.closest('.post-container');
+        const replyBox = postContainer.querySelector('.reply-box');
+        const replyContent = replyBox.querySelector('.reply-textarea').value; // Get the reply content from the textarea in the current post
 
-            if (replyContent.trim() === '') {
-                alert("Reply cannot be empty.");
-                return;
-            }
-
-            if (replyContent.length > 500) {
-                alert("Reply cannot exceed 500 characters.");
-                return;
-            }
-
-            const userNumber = Math.floor(Math.random() * 1000) + 1;
-            const replyHTML = `
-                <div class="reply">
-                    <span class="reply-user">User${userNumber}</span>
-                    <span class="reply-content">${replyContent}</span>
-                </div>
-            `;
-
-            // Append the reply to the current post
-            const replyContainer = postContainer.querySelector('.reply-container');
-            replyContainer.innerHTML += replyHTML;
-
-            // Clear the textarea
-            replyBox.querySelector('.reply-textarea').value = '';
+        if (replyContent.trim() === '') {
+            alert("Reply cannot be empty.");
+            return;
         }
-        function goToHomepage() {
+
+        if (replyContent.length > 500) {
+            alert("Reply cannot exceed 500 characters.");
+            return;
+        }
+
+        const userNumber = Math.floor(Math.random() * 1000) + 1;
+        const replyHTML = `
+            <div class="reply">
+                <span class="reply-user">User${userNumber}</span>
+                <span class="reply-content">${replyContent}</span>
+            </div>
+        `;
+
+        // Append the reply to the current post
+        const replyContainer = postContainer.querySelector('.reply-container');
+        replyContainer.innerHTML += replyHTML;
+
+        // Clear the textarea
+        replyBox.querySelector('.reply-textarea').value = '';
+    }
+    function goToHomepage() {
         location.reload();
+        document.getElementById('changeNeighborhoodIcon').style.display = 'none'; // Hide the icon
     }
     function loadMorePosts() {
         populateTable();
