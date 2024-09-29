@@ -104,8 +104,29 @@
             text-align: center;
             margin-bottom: 20px;
             font-family: "Inconsolata", system-ui;
-            margin-left: 30%;
-            margin-right: 30%;
+            margin-left: 10%;
+            margin-right: 10%;
+            opacity: 0;
+            white-space: normal; /* Allow text to wrap */
+            word-wrap: break-word; /* Break long words if necessary */
+            max-width: 80%; /* Adjust as needed */
+            display: inline-block;
+        }
+
+        .typing {
+            opacity: 1;
+            border-right: 2px solid white;
+            animation: blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: white }
+        }
+
+        #locationButton button {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
         }
         .post-content-wrapper {
             display: flex;
@@ -427,8 +448,8 @@
             }
 
             #changeNeighborhoodIcon {
-                height: 20px;
-                width: 20px;
+                height: 28px;
+                width: 28px;
             }
             .welcome-text {
                 margin-left: 10%;
@@ -759,8 +780,8 @@
     </div>
     
     <div id="locationButton" style="text-align: center;">
-        <p class="welcome-text">Welcome to scavenge. Explore missed connections 💘, blind items 🤫, nearby events 🥂and posts 📢 based on your location. Start by finding something new near you, and build your community.</p>
-        <button style="margin-top: 20px; margin-bottom: 15px;" onclick="getLocation()">Find posts near me</button>
+        <p id="welcomeText" class="welcome-text">Welcome to Scavenge. Explore missed connections 💘, blind items 🤫, events 🥂and posts 📢 based on location. Start by finding something new near you.</p>
+        <button id="findPostsButton" style="margin-top: 20px; margin-bottom: 15px;" onclick="getLocation()">Find posts near me</button>
     </div>
     <div id="neighborhoodLinks" class="neighborhood-links">
         <a class="neighborhood-link" onclick="selectNeighborhood('The Annex')">The Annex</a>, 
@@ -815,7 +836,8 @@
     
     <div id="actionButtons" style="text-align: center; display: none;">
         <span class="groovy-btn action-button" onclick="incrementGroovy(this)" data-count="0">❤️<span class="groovy-count"></span></span>
-        <button id="nextPostButton" class="action-button" onclick="showNextPost()">See next post</button>
+        <button id="nextPostButton" class="action-button" onclick="showNextPost()">Next</button>
+        <button id="previousPostButton" class="action-button" onclick="showPreviousPost()">Previous</button>
         <button class="reply-btn action-button" onclick="toggleReplyBox(this)">Reply</button>
         <span class="nope-btn action-button" onclick="incrementNope(this)" data-count="0">🚫<span class="nope-count"></span></span>
     </div>
@@ -852,7 +874,60 @@
         let touchStartX = 0;
         let touchEndX = 0;
 
-    function getLocation() {
+        function animateWelcomeText() {
+            const welcomeText = document.getElementById('welcomeText');
+            const findPostsButton = document.getElementById('findPostsButton');
+            let text = welcomeText.textContent;
+            welcomeText.innerHTML = '';
+            welcomeText.style.opacity = '1';
+            welcomeText.classList.add('typing');
+
+            let charIndex = 0;
+            const totalChars = [...text].length;
+            const animationDuration = 4800;
+            const charDelay = animationDuration / totalChars;
+            const sentencePause = 280;
+
+            function typeNextChar() {
+                if (charIndex < totalChars) {
+                    welcomeText.innerHTML += [...text][charIndex];
+                    charIndex++;
+                    
+                    if ([...text][charIndex - 1] === '.' && charIndex < totalChars) {
+                        setTimeout(() => {
+                            typeNextChar();
+                        }, sentencePause);
+                    } else {
+                        setTimeout(typeNextChar, charDelay);
+                    }
+                } else {
+                    welcomeText.classList.remove('typing');
+                    welcomeText.style.borderRight = 'none';
+                    findPostsButton.style.transition = 'opacity 0.5s ease-in-out';
+                    findPostsButton.style.opacity = '1';
+                }
+            }
+
+            typeNextChar();
+        }
+
+        function checkFirstVisit() {
+            if (!localStorage.getItem('hasVisited')) {
+                // First visit
+                animateWelcomeText();
+                localStorage.setItem('hasVisited', 'true');
+            } else {
+                // Subsequent visits
+                const welcomeText = document.getElementById('welcomeText');
+                const findPostsButton = document.getElementById('findPostsButton');
+                welcomeText.style.opacity = '1';
+                findPostsButton.style.opacity = '1';
+            }
+        }
+
+        window.onload = checkFirstVisit;
+
+        function getLocation() {
         // Use a geolocation API to get the user's location based on their IP address
         document.querySelector('.map-wrapper').style.display = 'flex';
         document.getElementById('mapPopup').style.display = 'flex';
@@ -1044,23 +1119,17 @@ function selectNeighborhood(neighborhood) {
             nextPost.style.display = 'block';
             nextPost.classList.add('wipe-in');
             
-            // Force a reflow to ensure the initial state is applied
-            nextPost.offsetHeight;
-
             setTimeout(() => {
                 nextPost.classList.remove('wipe-in');
                 nextPost.classList.add('active');
-                // Update the action buttons for the new post after it's fully visible
                 updateActionButtons();
             }, 10);
 
             currentPostIndex++;
         } else {
-            // All posts have been shown, generate more
             populatePosts();
         }
     }
-
     function updateActionButtons() {
         const actionButtons = document.getElementById('actionButtons');
         const groovyBtn = actionButtons.querySelector('.groovy-btn');
@@ -1097,20 +1166,21 @@ function selectNeighborhood(neighborhood) {
             const currentPost = posts[currentPostIndex - 1];
             const previousPost = posts[currentPostIndex - 2];
 
-            currentPost.classList.add('wipe-out'); // Wipe out current post to the right
+            currentPost.classList.add('wipe-out');
             setTimeout(() => {
                 currentPost.classList.remove('active', 'wipe-out');
                 currentPost.style.display = 'none';
             }, 250);
 
             previousPost.style.display = 'block';
-            previousPost.classList.add('wipe-in'); // Wipe in previous post from the left
+            previousPost.classList.add('wipe-in');
             setTimeout(() => {
                 previousPost.classList.remove('wipe-in');
                 previousPost.classList.add('active');
             }, 10);
 
             currentPostIndex--;
+            updateActionButtons();
         }
     }
 
