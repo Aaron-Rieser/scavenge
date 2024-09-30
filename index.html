@@ -179,6 +179,7 @@
             background-color: rgba(0, 0, 0, 0);
             margin-top: 25px; /* Add 50px of space above the image container */
             overflow: visible;
+            padding-bottom: 1%;
         }
 
         .toronto-image {
@@ -416,6 +417,7 @@
             }
             .image-container {
                 margin-top: 25px; /* Ensure 50px space is maintained on mobile */
+                padding-bottom: 1%;
             }
             #changeNeighborhoodIcon {
                 height: 28px;
@@ -513,6 +515,7 @@
         .neighborhood-links {
             position: absolute;
             top: 10%;
+            bottom: 5%
             left: 0;
             right: 0;
             text-align: center;
@@ -530,6 +533,14 @@
             text-decoration: none;
             padding: 2px 4px;
             color: white;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0 ease-out, transform 0.3s ease-out;
+        }
+
+        .neighborhood-link.show {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .neighborhood-link:nth-child(4n+1) { background-color: #4a6fa5; }
@@ -748,7 +759,7 @@
             <h1 class="title" onclick="goToHomepage()"><span class="bold">scavenge</span><span class="normal">.toronto</span></h1>
         </div>
         <div class="header-right">
-            <img src="map-icon.png" alt="Change neighbourhood" id="changeNeighborhoodIcon" onclick="changeNeighborhood()" style="display: none;">
+            <img src="map_icon_1.png" alt="Change neighbourhood" id="changeNeighborhoodIcon" onclick="changeNeighborhood()" style="display: none;">
         </div>
     </header>
     
@@ -779,8 +790,8 @@
     
     <div id="actionButtons" style="text-align: center; display: none;">
         <span class="groovy-btn action-button" onclick="incrementGroovy(this)" data-count="0">❤️<span class="groovy-count"></span></span>
-        <button id="nextPostButton" class="action-button" onclick="showNextPost()">Next</button>
         <button id="previousPostButton" class="action-button" onclick="showPreviousPost()">Previous</button>
+        <button id="nextPostButton" class="action-button" onclick="showNextPost()">Next</button>
         <button class="reply-btn action-button" onclick="toggleReplyBox(this)">Reply</button>
         <span class="nope-btn action-button" onclick="incrementNope(this)" data-count="0">🚫<span class="nope-count"></span></span>
     </div>
@@ -915,6 +926,8 @@
                         
                         const colorClass = `color-${index % 4}`;
                         link.classList.add(colorClass);
+
+                        link.classList.remove('show');
                         
                         neighborhoodLinks.appendChild(link);
                         
@@ -960,12 +973,29 @@
         function toggleNeighborhoodLinks() {
             const links = document.getElementById('neighborhoodLinks');
             const button = document.getElementById('showNeighborhoodsButton');
+            const neighborhoodLinks = links.querySelectorAll('.neighborhood-link');
+
             if (links.style.display === 'none' || links.style.display === '') {
                 links.style.display = 'block';
                 button.textContent = 'Hide neighbourhoods';
+
+                // Animate links appearing one by one
+                neighborhoodLinks.forEach((link, index) => {
+                    setTimeout(() => {
+                        link.classList.add('show');
+                    }, index * 50); // 50ms delay between each link
+                });
             } else {
-                links.style.display = 'none';
-                button.textContent = 'Show all neighbourhoods';
+                // Hide links immediately
+                neighborhoodLinks.forEach(link => {
+                    link.classList.remove('show');
+                });
+
+                // Delay hiding the container to allow for fade-out animation
+                setTimeout(() => {
+                    links.style.display = 'none';
+                    button.textContent = 'Show all neighbourhoods';
+                }, 300); // Match this with the transition duration in CSS
             }
         }
 
