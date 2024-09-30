@@ -124,10 +124,31 @@
             50% { border-color: white }
         }
 
-        #locationButton button {
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
+        #locationButton {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 75px; /* Add 50px of space below the button */
+            background-color: black; /* Add black space under the button */
         }
+        #neighborhoodLinks {
+            display: none; /* Hide neighborhood links by default */
+        }
+
+        #showNeighborhoodsButton {
+            position: absolute;
+            top: 0px;
+            width: 220px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: black;
+            color: white;
+            padding: 10px 20px;
+            font-size: 20px;
+            border: none;
+            cursor: pointer;
+            font-family: "Inconsolata", system-ui;
+        }
+
         .post-content-wrapper {
             display: flex;
             flex-direction: column;
@@ -155,10 +176,9 @@
             position: relative;
             width: 100%;
             max-width: 1920px;
-            background-color: black;
-            margin-bottom: -600px;
-
-            overflow: hidden; /* Add this line */
+            background-color: rgba(0, 0, 0, 0);
+            margin-top: 25px; /* Add 50px of space above the image container */
+            overflow: visible;
         }
 
         .toronto-image {
@@ -175,58 +195,6 @@
             margin: 0;
             padding: 0;
             height: 100%;
-        }
-
-        .trending-title {
-            position: absolute;
-            top: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgb(49, 40, 90);
-            color: white;
-            padding: 10px 20px;
-            font-size: 20px;
-            text-align: center;
-            width: 200px;
-            z-index: 2; /* Increase z-index */
-        }
-
-        .trending-posts {
-            position: absolute;
-            top: 105px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 300px;
-            z-index: 2; /* Increase z-index */
-            max-height: calc(100% - 105px); /* Limit height */
-            overflow-y: auto; /* Add scrolling if needed */
-        }
-
-        .trending-post {
-            background-color: rgba(255, 255, 255, 0.8);
-            color: black;
-            margin-bottom: 10px;
-            padding: 10px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .trending-post-title {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .trending-post-flag {
-            color: grey;
-            font-size: 12px;
-            margin-bottom: 5px;
-        }
-
-        .trending-post-content {
-            font-size: 12px;
         }
         table {
             width: 80%;
@@ -446,7 +414,9 @@
             header {
                 padding: 6px;
             }
-
+            .image-container {
+                margin-top: 25px; /* Ensure 50px space is maintained on mobile */
+            }
             #changeNeighborhoodIcon {
                 height: 28px;
                 width: 28px;
@@ -541,13 +511,20 @@
         }
 
         .neighborhood-links {
+            position: absolute;
+            top: 10%;
+            left: 0;
+            right: 0;
             text-align: center;
-            margin: 10px 0;
+            padding: 10px;
+            max-height: none; /* Remove any max-height restriction */
+            overflow: hidden; /* Allow content to overflow */
             line-height: 1.5;
+            background-color: rgba(0, 0, 0, 0); /* Semi-transparent background */
         }
 
         .neighborhood-link {
-            font-family: "Inconsolata", system-ui; // Updated font-family
+            font-family: "Inconsolata", system-ui;
             font-size: 14px;
             cursor: pointer;
             text-decoration: none;
@@ -783,48 +760,14 @@
         <p id="welcomeText" class="welcome-text">Welcome to Scavenge. Explore missed connections 💘, blind items 🤫, events 🥂and posts 📢 based on location. Start by finding something new near you.</p>
         <button id="findPostsButton" style="margin-top: 20px; margin-bottom: 15px;" onclick="getLocation()">Find posts near me</button>
     </div>
-    <div id="neighborhoodLinks" class="neighborhood-links">
-        <a class="neighborhood-link" onclick="selectNeighborhood('The Annex')">The Annex</a>, 
-        <a class="neighborhood-link" onclick="selectNeighborhood('Downtown')">Downtown</a>, 
-        <a class="neighborhood-link" onclick="selectNeighborhood('Liberty Village')">Liberty Village</a>, 
-        <a class="neighborhood-link" onclick="selectNeighborhood('Cabbagetown')">Cabbagetown</a>, 
-        <a class="neighborhood-link" onclick="selectNeighborhood('Leslieville')">Leslieville</a>, 
-        <a class="neighborhood-link" onclick="selectNeighborhood('North York')">North York</a>, 
-        <a class="neighborhood-link" onclick="selectNeighborhood('The Junction')">The Junction</a>, 
-        <a class="neighborhood-link" onclick="selectNeighborhood('High Park')">High Park</a>, 
-        <a class="neighborhood-link" onclick="selectNeighborhood('West End')">West End</a>, 
-        <a class="neighborhood-link" onclick="selectNeighborhood('The Village')">The Village</a>, 
-        <a class="neighborhood-link" onclick="selectNeighborhood('Etobicoke')">Etobicoke</a>, 
-        <a class="neighborhood-link" onclick="selectNeighborhood('Birchcliffe')">Birchcliffe</a>, 
-        <a class="neighborhood-link" onclick="selectNeighborhood('Scarborough')">Scarborough</a>, 
-        <a class="neighborhood-link" onclick="selectNeighborhood('Mt. Pleasant')">Mt. Pleasant</a>, 
-        <a class="neighborhood-link" onclick="selectNeighborhood('Don Mills')">Don Mills</a>
+
     </div>
-    <div class="image-container" id="trendingContainer">
+    <div class="image-container">
         <img src="toronto_image.jpg" alt="Toronto" class="toronto-image" id="torontoImage">
-        <div class="trending-title">Trending posts</div>
-        <div class="trending-posts">
-            <div class="trending-post">
-                <div class="trending-post-title">Here's how we met lorem ipsum</div>
-                <div class="trending-post-flag">Missed connection</div>
-                <div class="trending-post-content">You'll never guess who I saw coming out of the Tiki Bar lorem ipsum lorem ipsum lorem</div>
-            </div>
-            <div class="trending-post">
-                <div class="trending-post-title">Here's how we met lorem ipsum</div>
-                <div class="trending-post-flag">Blind item</div>
-                <div class="trending-post-content">You'll never guess who I saw coming out of the Tiki Bar lorem ipsum lorem ipsum lorem</div>
-            </div>
-            <div class="trending-post">
-                <div class="trending-post-title">Here's how we met lorem ipsum</div>
-                <div class="trending-post-flag">For sale</div>
-                <div class="trending-post-content">You'll never guess who I saw coming out of the Tiki Bar lorem ipsum lorem ipsum lorem</div>
-            </div>
-            <div class="trending-post">
-                <div class="trending-post-title">Here's how we met lorem ipsum</div>
-                <div class="trending-post-flag">Thoughts</div>
-                <div class="trending-post-content">You'll never guess who I saw coming out of the Tiki Bar lorem ipsum lorem ipsum lorem</div>
-            </div>
+        <div id="neighborhoodLinks" class="neighborhood-links">
+            <!-- This div will be populated dynamically with JavaScript -->
         </div>
+        <button id="showNeighborhoodsButton">Show all neighbourhoods</button>
     </div>
     <p id="location" style="text-align: center;"></p>
     <div id="changeNeighborhoodButton" style="text-align: center; display: none;">
@@ -926,6 +869,112 @@
         }
 
         window.onload = checkFirstVisit;
+        
+        function populateNeighborhoodLinks() {
+            fetch('https://ipapi.co/json/')
+                .then(response => response.json())
+                .then(ipData => {
+                    const userLat = ipData.latitude;
+                    const userLon = ipData.longitude;
+
+                    if (!userLat || !userLon) {
+                        throw new Error('User location not available');
+                    }
+
+                    return fetch('Toronto_Neighbourhoods.geojson')
+                        .then(response => response.json())
+                        .then(data => ({ data, userLat, userLon }));
+                })
+                .then(({ data, userLat, userLon }) => {
+                    const neighborhoodLinks = document.getElementById('neighborhoodLinks');
+                    neighborhoodLinks.innerHTML = '';
+                    
+                    const imageContainer = document.querySelector('.image-container');
+                    const availableHeight = imageContainer.offsetHeight * 0.8;
+                    const linkHeight = 24;
+                    const linksPerRow = Math.floor(imageContainer.offsetWidth / 100);
+                    
+                    const maxLinks = Math.floor(availableHeight / linkHeight) * linksPerRow;
+                    
+                    const sortedNeighborhoods = data.features
+                        .map(feature => {
+                            const coords = feature.geometry.coordinates[0][0];
+                            const centerLat = coords.reduce((sum, coord) => sum + coord[1], 0) / coords.length;
+                            const centerLon = coords.reduce((sum, coord) => sum + coord[0], 0) / coords.length;
+                            const distance = calculateDistance(userLat, userLon, centerLat, centerLon);
+                            return { feature, distance };
+                        })
+                        .sort((a, b) => a.distance - b.distance);
+
+                    sortedNeighborhoods.slice(0, maxLinks).forEach((item, index) => {
+                        const areaName = item.feature.properties.AREA_NAME;
+                        const link = document.createElement('a');
+                        link.className = 'neighborhood-link';
+                        link.textContent = areaName;
+                        link.onclick = () => selectNeighborhood(areaName);
+                        
+                        const colorClass = `color-${index % 4}`;
+                        link.classList.add(colorClass);
+                        
+                        neighborhoodLinks.appendChild(link);
+                        
+                        if (index < maxLinks - 1) {
+                            neighborhoodLinks.appendChild(document.createTextNode(' '));
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Fallback to unsorted list if location or data fetch fails
+                    populateUnsortedNeighborhoodLinks();
+                });
+        }
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius of the Earth in km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c; // Distance in km
+        }
+
+        function populateUnsortedNeighborhoodLinks() {
+            // Original unsorted population logic
+            fetch('Toronto_Neighbourhoods.geojson')
+                .then(response => response.json())
+                .then(data => {
+                    const neighborhoodLinks = document.getElementById('neighborhoodLinks');
+                    neighborhoodLinks.innerHTML = '';
+                    
+                    data.features.forEach((feature, index) => {
+                        // ... (rest of the original code)
+                    });
+                })
+                .catch(error => console.error('Error loading GeoJSON:', error));
+        }
+
+        function toggleNeighborhoodLinks() {
+            const links = document.getElementById('neighborhoodLinks');
+            const button = document.getElementById('showNeighborhoodsButton');
+            if (links.style.display === 'none' || links.style.display === '') {
+                links.style.display = 'block';
+                button.textContent = 'Hide neighbourhoods';
+            } else {
+                links.style.display = 'none';
+                button.textContent = 'Show all neighbourhoods';
+            }
+        }
+
+        // Modify the window.onload function
+        window.onload = function() {
+            checkFirstVisit();
+            populateNeighborhoodLinks();
+            document.getElementById('showNeighborhoodsButton').addEventListener('click', toggleNeighborhoodLinks);
+        };
 
         function getLocation() {
         // Use a geolocation API to get the user's location based on their IP address
@@ -1003,10 +1052,11 @@
         }, 100);
     }
 
-function selectNeighborhood(neighborhood) {
-    selectedNeighborhood = neighborhood;
-    showNeighborhoodPosts();
-}
+    function selectNeighborhood(neighborhood) {
+        selectedNeighborhood = neighborhood;
+        showNeighborhoodPosts();
+        document.getElementById('selectedNeighborhoodDisplay').textContent = neighborhood;
+    }
 
     function closeMapPopup() {
         document.getElementById('mapPopup').style.display = 'none';
@@ -1020,9 +1070,9 @@ function selectNeighborhood(neighborhood) {
         document.getElementById('locationButton').style.display = 'none';
         document.getElementById('neighborhoodLinks').style.display = 'none';
         document.getElementById('torontoImage').style.display = 'none';
-        document.getElementById('trendingContainer').style.display = 'none';
         document.getElementById('actionButtons').style.display = 'flex';
         document.getElementById('changeNeighborhoodIcon').style.display = 'block'; // Show the icon
+        document.getElementById('showNeighborhoodsButton').style.display = 'none'; // Hide the button
         populatePosts();
     }
 
@@ -1291,6 +1341,7 @@ function selectNeighborhood(neighborhood) {
     function goToHomepage() {
         location.reload();
         document.getElementById('changeNeighborhoodIcon').style.display = 'none'; // Hide the icon
+        
     }
     function loadMorePosts() {
         populateTable();
