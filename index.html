@@ -257,23 +257,26 @@
         }
 
         .reply-box {
-        display: none;
-        width: 100%;
-        margin-top: 20px; /* Increased space to move the reply box down */
-        position: relative;
-        padding-bottom: 40px; /* Add space for the button */
-    }
+            display: none;
+            width: 100%;
+            margin-top: 20px;
+            position: relative;
+            padding-bottom: 40px;
+            font-family: "Inter", sans-serif;
+        }
 
         .reply-textarea {
             width: 100%;
             height: 4em;
             resize: vertical;
             margin-bottom: 10px;
+            max-length: 500;
+            font-family: "Inter", sans-serif;
         }
 
         .post-btn {
             font-weight: bold;
-            background-color: #a54a4a;
+            background-color: blue;
             color: white;
             font-size: 15px;
             padding: 5px 10px;
@@ -283,7 +286,7 @@
         }
 
         .post-btn:hover {
-            background-color: black;
+            background-color: darkblue;
         }
         footer {
             text-align: center;
@@ -507,6 +510,12 @@
             .reply-box {
                 order: 4; /* Ensure reply box appears after the replies */
             }
+            .reply {
+                margin-left: -6px;
+            }
+            .reply-textarea {
+                margin-left: -8px;
+            }
             #posts {
             height: calc(100vh - 70px); /* Adjust height for mobile to fit the viewport */
         }
@@ -644,10 +653,8 @@
         }
 
         .reply {
-            margin-left: 20px;
-            border-left: 1px solid #444;
-            padding-left: 10px;
             margin-top: 5px;
+            font-size: 12px;
         }
 
         .reply-user {
@@ -657,14 +664,6 @@
 
         .reply-content {
             font-size: 10px;
-        }
-
-        .reply-textarea {
-            width: 100%;
-            height: 4em;
-            resize: vertical;
-            margin-bottom: 10px;
-            max-length: 500;
         }
 
     #closeMapButton:hover {
@@ -744,10 +743,8 @@
     }
 
     .action-button:hover {
-        background-color: rgba(255, 255, 255, 0.1); /* Hover effect */
+        background-color: #a54a4a; /* Light red highlight */
     }
-
-
 </style>
         
     </style>
@@ -792,7 +789,7 @@
         <span class="groovy-btn action-button" onclick="incrementGroovy(this)" data-count="0">❤️<span class="groovy-count"></span></span>
         <button id="previousPostButton" class="action-button" onclick="showPreviousPost()">Previous</button>
         <button id="nextPostButton" class="action-button" onclick="showNextPost()">Next</button>
-        <button class="reply-btn action-button" onclick="toggleReplyBox(this)">Reply</button>
+        <button class="reply-btn action-button" onclick="toggleReplyBox()">Reply</button>
         <span class="nope-btn action-button" onclick="incrementNope(this)" data-count="0">🚫<span class="nope-count"></span></span>
     </div>
     
@@ -1178,24 +1175,34 @@
             postsContainer.innerHTML += generatePostHTML(postCount + i + 1);
         }
         postCount += 20;
-        currentPostIndex = 0;
-        showNextPost();
+        currentPostIndex = -1; // Start at -1
+        showNextPost(); // This will display the first post (index 0)
     }
-
     function showNextPost() {
+        resetReplyButton();
         const posts = document.querySelectorAll('.post-container');
-        if (currentPostIndex < posts.length) {
-            const currentPost = posts[currentPostIndex - 1];
-            const nextPost = posts[currentPostIndex];
+        
+        // Hide the current post if there is one
+        if (currentPostIndex >= 0 && currentPostIndex < posts.length) {
+            const currentPost = posts[currentPostIndex];
+            currentPost.classList.add('wipe-out');
+            setTimeout(() => {
+                currentPost.classList.remove('active', 'wipe-out');
+                currentPost.style.display = 'none';
+            }, 250);
+        }
 
-            if (currentPost) {
-                currentPost.classList.add('wipe-out');
-                setTimeout(() => {
-                    currentPost.classList.remove('active', 'wipe-out');
-                    currentPost.style.display = 'none';
-                }, 250);
-            }
+        // Move to the next post
+        currentPostIndex++;
 
+        // If we've reached the end, reset to the beginning
+        if (currentPostIndex >= posts.length) {
+            currentPostIndex = 0;
+        }
+
+        // Show the next post
+        const nextPost = posts[currentPostIndex];
+        if (nextPost) {
             nextPost.style.display = 'block';
             nextPost.classList.add('wipe-in');
             
@@ -1204,11 +1211,9 @@
                 nextPost.classList.add('active');
                 updateActionButtons();
             }, 10);
-
-            currentPostIndex++;
-        } else {
-            populatePosts();
         }
+
+        console.log('Current post index:', currentPostIndex); // Debugging line
     }
     function updateActionButtons() {
         const actionButtons = document.getElementById('actionButtons');
@@ -1241,26 +1246,31 @@
         }
     });
     function showPreviousPost() {
+        resetReplyButton();
         const posts = document.querySelectorAll('.post-container');
-        if (currentPostIndex > 1) {
-            const currentPost = posts[currentPostIndex - 1];
-            const previousPost = posts[currentPostIndex - 2];
+        if (currentPostIndex > 0) {
+            const currentPost = posts[currentPostIndex];
+            const previousPost = posts[currentPostIndex - 1];
 
-            currentPost.classList.add('wipe-out');
-            setTimeout(() => {
-                currentPost.classList.remove('active', 'wipe-out');
-                currentPost.style.display = 'none';
-            }, 250);
+            if (currentPost) {
+                currentPost.classList.add('wipe-out');
+                setTimeout(() => {
+                    currentPost.classList.remove('active', 'wipe-out');
+                    currentPost.style.display = 'none';
+                }, 250);
+            }
 
-            previousPost.style.display = 'block';
-            previousPost.classList.add('wipe-in');
-            setTimeout(() => {
-                previousPost.classList.remove('wipe-in');
-                previousPost.classList.add('active');
-            }, 10);
+            if (previousPost) {
+                previousPost.style.display = 'block';
+                previousPost.classList.add('wipe-in');
+                setTimeout(() => {
+                    previousPost.classList.remove('wipe-in');
+                    previousPost.classList.add('active');
+                }, 10);
 
-            currentPostIndex--;
-            updateActionButtons();
+                currentPostIndex--;
+                updateActionButtons();
+            }
         }
     }
 
@@ -1305,43 +1315,52 @@
                         <span class="profile-name">User${userNumber}</span>
                     </div>
                 </div>
-                <div class="reply-btn-wrapper">
-                    <!-- ... reply button ... -->
-                </div>
                 <div class="reply-box" style="display: none;">
-                    <!-- ... reply box content ... -->
+                    <textarea class="reply-textarea" maxlength="500" placeholder="Write your reply (max 500 characters)"></textarea>
                 </div>
                 <div class="reply-container"></div>
             </div>
         `;
     }
     function incrementGroovy(button) {
+        resetReplyButton();
         let count = parseInt(button.getAttribute('data-count')) + 1;
         button.setAttribute('data-count', count);
         let countSpan = button.querySelector('.groovy-count');
         countSpan.textContent = count > 0 ? count : '';
     }
     function incrementNope(button) {
+        resetReplyButton();
         let count = parseInt(button.getAttribute('data-count')) + 1;
         button.setAttribute('data-count', count);
         let countSpan = button.querySelector('.nope-count');
         countSpan.textContent = count > 0 ? count : '';
     }
 
-    function toggleReplyBox(button) {
-            const postContainer = button.closest('.post-container');
-            const replyBox = postContainer.querySelector('.reply-box');
-            if (replyBox.style.display === 'none' || replyBox.style.display === '') {
-                replyBox.style.display = 'block';
-            } else {
-                replyBox.style.display = 'none';
-            }
-        }
+    function toggleReplyBox() {
+        const activePost = document.querySelector('.post-container.active');
+        if (!activePost) return;
 
-    function submitReply(button) {
-        const postContainer = button.closest('.post-container');
-        const replyBox = postContainer.querySelector('.reply-box');
-        const replyContent = replyBox.querySelector('.reply-textarea').value; // Get the reply content from the textarea in the current post
+        const replyBox = activePost.querySelector('.reply-box');
+        const replyBtn = document.querySelector('#actionButtons .reply-btn');
+
+        if (replyBox.style.display === 'none' || replyBox.style.display === '') {
+            // Open reply box
+            replyBox.style.display = 'block';
+            replyBtn.textContent = 'Post';
+            replyBtn.style.backgroundColor = 'blue';
+        } else {
+            // Post reply
+            submitReply();
+        }
+    }
+
+    function submitReply() {
+        const activePost = document.querySelector('.post-container.active');
+        if (!activePost) return;
+
+        const replyBox = activePost.querySelector('.reply-box');
+        const replyContent = replyBox.querySelector('.reply-textarea').value;
 
         if (replyContent.trim() === '') {
             alert("Reply cannot be empty.");
@@ -1361,13 +1380,33 @@
             </div>
         `;
 
-        // Append the reply to the current post
-        const replyContainer = postContainer.querySelector('.reply-container');
+        const replyContainer = activePost.querySelector('.reply-container');
         replyContainer.innerHTML += replyHTML;
 
-        // Clear the textarea
         replyBox.querySelector('.reply-textarea').value = '';
+        
+        // Reset the reply button and hide the reply box
+        const replyBtn = document.querySelector('#actionButtons .reply-btn');
+        replyBtn.textContent = 'Reply';
+        replyBtn.style.backgroundColor = '';
+        replyBox.style.display = 'none';
     }
+
+    function resetReplyButton() {
+        const replyBtn = document.querySelector('#actionButtons .reply-btn');
+        replyBtn.textContent = 'Reply';
+        replyBtn.style.backgroundColor = '';
+
+        // Hide the reply box for the active post
+        const activePost = document.querySelector('.post-container.active');
+        if (activePost) {
+            const replyBox = activePost.querySelector('.reply-box');
+            if (replyBox) {
+                replyBox.style.display = 'none';
+            }
+        }
+    }
+
     function goToHomepage() {
         location.reload();
         document.getElementById('changeNeighborhoodIcon').style.display = 'none'; // Hide the icon
