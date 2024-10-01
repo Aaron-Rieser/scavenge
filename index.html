@@ -267,10 +267,11 @@
 
         .reply-textarea {
             width: 100%;
-            height: 4em;
+            height: 11em;
             resize: vertical;
             margin-bottom: 10px;
             max-length: 500;
+            touch-action: manipulation; /* Prevent zooming on touch */
             font-family: "Inter", sans-serif;
         }
 
@@ -1168,6 +1169,7 @@
             showPreviousPost(); // Swipe right
         }
     }    
+
     function populatePosts() {
         const postsContainer = document.getElementById('posts');
         postsContainer.innerHTML = '';
@@ -1175,9 +1177,10 @@
             postsContainer.innerHTML += generatePostHTML(postCount + i + 1);
         }
         postCount += 20;
-        currentPostIndex = -1; // Start at -1
+        currentPostIndex = -1; // Start at -1 so the first showNextPost() call will set it to 0
         showNextPost(); // This will display the first post (index 0)
     }
+
     function showNextPost() {
         resetReplyButton();
         const posts = document.querySelectorAll('.post-container');
@@ -1195,7 +1198,7 @@
         // Move to the next post
         currentPostIndex++;
 
-        // If we've reached the end, reset to the beginning
+        // If we've reached the end, loop back to the first post
         if (currentPostIndex >= posts.length) {
             currentPostIndex = 0;
         }
@@ -1205,16 +1208,16 @@
         if (nextPost) {
             nextPost.style.display = 'block';
             nextPost.classList.add('wipe-in');
-            
             setTimeout(() => {
                 nextPost.classList.remove('wipe-in');
                 nextPost.classList.add('active');
-                updateActionButtons();
             }, 10);
         }
 
+        updateActionButtons();
         console.log('Current post index:', currentPostIndex); // Debugging line
     }
+
     function updateActionButtons() {
         const actionButtons = document.getElementById('actionButtons');
         const groovyBtn = actionButtons.querySelector('.groovy-btn');
@@ -1316,7 +1319,7 @@
                     </div>
                 </div>
                 <div class="reply-box" style="display: none;">
-                    <textarea class="reply-textarea" maxlength="500" placeholder="Write your reply (max 500 characters)"></textarea>
+                    <textarea class="reply-textarea" maxlength="500" placeholder="Write your reply (max 500 characters)"></textarea>           
                 </div>
                 <div class="reply-container"></div>
             </div>
@@ -1349,6 +1352,30 @@
             replyBox.style.display = 'block';
             replyBtn.textContent = 'Post';
             replyBtn.style.backgroundColor = 'blue';
+
+            // Create and append close button
+            const closeButton = document.createElement('button');
+            closeButton.textContent = '✖'; // X symbol
+            closeButton.style.position = 'absolute';
+            closeButton.style.bottom = '45px'; // Adjusted to touch the bottom
+            closeButton.style.right = '15px'; // Adjusted to touch the right
+            closeButton.style.borderRadius = '0%'; // Changed to a full circle
+            closeButton.style.backgroundColor = 'blue'; // Changed to blue
+            closeButton.style.color = 'white';
+            closeButton.style.border = 'none';
+            closeButton.style.cursor = 'pointer';
+            closeButton.style.width = '11px'; // Slightly increased width
+            closeButton.style.height = '11px'; // Slightly increased height
+            closeButton.style.fontSize = '8px'; // Adjusted font size for better centering
+            closeButton.style.display = 'flex'; // Use flexbox for centering
+            closeButton.style.alignItems = 'center'; // Center vertically
+            closeButton.style.justifyContent = 'center'; // Center horizontally
+            closeButton.onclick = () => {
+                replyBox.style.display = 'none'; // Close reply box
+                replyBtn.textContent = 'Reply'; // Reset button text
+                replyBtn.style.backgroundColor = ''; // Reset button color
+            };
+            replyBox.appendChild(closeButton); // Append close button to reply box
         } else {
             // Post reply
             submitReply();
